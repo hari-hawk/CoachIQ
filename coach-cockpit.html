@@ -1,0 +1,1767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CoachIQ — Coach Cockpit</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap" rel="stylesheet">
+<style>
+/* ── Design Tokens ── */
+:root {
+  --color-bg: #FAF8F5;
+  --color-topbar: #1E1E1E;
+  --color-topbar-hover: #2A2A2A;
+  --color-topbar-text: #B0AEAB;
+  --color-topbar-active: #FFFFFF;
+  --color-brand: #C0392B;
+  --color-brand-light: #E8D5D0;
+  --color-brand-soft: #F5EEEB;
+  --color-text: #1A1A1A;
+  --color-text-secondary: #6B6560;
+  --color-text-muted: #9B9590;
+  --color-border: #E8E4E0;
+  --color-border-light: #F0ECE8;
+  --color-card-bg: #FFFFFF;
+  --color-input-bg: #FFFFFF;
+  --color-tag-bg: #F5F0EC;
+  --color-tag-text: #5A5550;
+  --color-success: #2E7D32;
+  --color-warning: #E65100;
+  --color-processing: #7B61FF;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+  --shadow-md: 0 2px 8px rgba(0,0,0,0.06);
+  --shadow-lg: 0 4px 20px rgba(0,0,0,0.08);
+  --font: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-serif: 'Source Serif 4', Georgia, serif;
+  --transition: 0.2s ease;
+  --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+body {
+  font-family: var(--font);
+  background: var(--color-bg);
+  color: var(--color-text);
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Skip Nav ── */
+.skip-nav {
+  position: absolute; top: -100%; left: 50%; transform: translateX(-50%);
+  padding: 8px 20px; background: var(--color-brand); color: #fff;
+  border-radius: var(--radius-sm); font-size: 13px; font-weight: 600;
+  z-index: 9999; text-decoration: none;
+  transition: top var(--transition);
+}
+.skip-nav:focus { top: 8px; }
+
+/* ── Focus Visible ── */
+*:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
+}
+
+/* ── Reduced Motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ════════════════════════════════════════════════
+   TOP NAVIGATION BAR
+   ════════════════════════════════════════════════ */
+.topbar {
+  display: flex; align-items: center; height: 54px;
+  background: var(--color-topbar); padding: 0 24px;
+  flex-shrink: 0; z-index: 100;
+}
+.topbar-logo {
+  display: flex; align-items: center; gap: 10px;
+  margin-right: 32px; flex-shrink: 0; text-decoration: none;
+}
+.topbar-logo .logo-icon {
+  width: 32px; height: 32px; background: var(--color-brand);
+  border-radius: 8px; display: flex; align-items: center; justify-content: center;
+}
+.topbar-logo .logo-icon svg { width: 18px; height: 18px; fill: #fff; }
+.topbar-logo .logo-text {
+  font-size: 16px; font-weight: 700; color: #fff; letter-spacing: 0.5px;
+}
+.topbar-nav { display: flex; align-items: center; gap: 2px; flex: 1; }
+.topbar-nav-item {
+  display: flex; align-items: center; gap: 7px;
+  padding: 8px 16px; border-radius: var(--radius-sm);
+  color: var(--color-topbar-text); text-decoration: none;
+  font-size: 13.5px; font-weight: 500;
+  transition: all var(--transition); white-space: nowrap;
+  cursor: pointer; border: none; background: none; font-family: var(--font);
+}
+.topbar-nav-item:hover { background: var(--color-topbar-hover); color: #ddd; }
+.topbar-nav-item.active { background: rgba(255,255,255,0.1); color: var(--color-topbar-active); }
+.topbar-nav-item svg { width: 16px; height: 16px; opacity: 0.7; flex-shrink: 0; }
+.topbar-nav-item.active svg { opacity: 1; }
+.topbar-right { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+.topbar-search-btn, .topbar-notif-btn {
+  width: 34px; height: 34px; border-radius: var(--radius-sm);
+  border: none; background: none;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--color-topbar-text);
+  transition: all var(--transition);
+}
+.topbar-search-btn:hover, .topbar-notif-btn:hover {
+  background: var(--color-topbar-hover); color: #fff;
+}
+.topbar-user {
+  display: flex; align-items: center; gap: 8px;
+  margin-left: 8px; padding: 4px 8px 4px 4px;
+  border-radius: var(--radius-sm); cursor: pointer;
+  transition: all var(--transition);
+}
+.topbar-user:hover { background: var(--color-topbar-hover); }
+.topbar-user .avatar {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: linear-gradient(135deg, #2E7D32, #4CAF50);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600; color: #fff;
+}
+.topbar-user .user-name { font-size: 12.5px; font-weight: 600; color: #fff; }
+.topbar-user .user-role { font-size: 10px; color: var(--color-topbar-text); }
+
+/* ════════════════════════════════════════════════
+   APP LAYOUT (sidebar + main)
+   ════════════════════════════════════════════════ */
+.app-body {
+  flex: 1; display: flex; overflow: hidden;
+}
+
+/* ── Left Sidebar (icon-only) ── */
+.sidebar {
+  width: 48px; min-width: 48px; background: var(--color-topbar);
+  display: flex; flex-direction: column; align-items: center;
+  padding: 12px 0; gap: 4px; flex-shrink: 0;
+  border-right: 1px solid rgba(255,255,255,0.06);
+}
+.sidebar-logo {
+  width: 32px; height: 32px; background: var(--color-brand);
+  border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  margin-bottom: 12px; flex-shrink: 0;
+}
+.sidebar-logo svg { width: 16px; height: 16px; fill: #fff; }
+.sidebar-icon {
+  width: 36px; height: 36px; border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--color-topbar-text); cursor: pointer;
+  transition: all var(--transition); border: none; background: none;
+  position: relative;
+}
+.sidebar-icon:hover { background: var(--color-topbar-hover); color: #ddd; }
+.sidebar-icon.active { background: rgba(255,255,255,0.12); color: #fff; }
+.sidebar-icon svg { width: 18px; height: 18px; }
+.sidebar-divider {
+  width: 24px; height: 1px; background: rgba(255,255,255,0.08);
+  margin: 8px 0;
+}
+.sidebar-section-label {
+  font-size: 8px; font-weight: 700; letter-spacing: 1px;
+  color: rgba(255,255,255,0.25); text-transform: uppercase;
+  margin-top: 8px; margin-bottom: 2px;
+}
+.sidebar-spacer { flex: 1; }
+.sidebar-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: linear-gradient(135deg, #2E7D32, #4CAF50);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700; color: #fff;
+  cursor: pointer; margin-top: 8px; flex-shrink: 0;
+}
+
+/* ════════════════════════════════════════════════
+   MAIN CONTENT
+   ════════════════════════════════════════════════ */
+.main-content {
+  flex: 1; display: flex; overflow: hidden;
+}
+.main-scroll {
+  flex: 1; overflow-y: auto; padding: 28px 32px 40px;
+  display: flex; gap: 28px;
+}
+
+/* ── Two Column Layout ── */
+.col-left { flex: 0 0 65%; max-width: 65%; display: flex; flex-direction: column; gap: 24px; }
+.col-right { flex: 0 0 calc(35% - 28px); max-width: calc(35% - 28px); display: flex; flex-direction: column; gap: 24px; position: sticky; top: 0; align-self: flex-start; }
+
+/* ════════════════════════════════════════════════
+   GREETING
+   ════════════════════════════════════════════════ */
+.greeting h1 {
+  font-family: var(--font-serif); font-size: 26px; font-weight: 700;
+  color: var(--color-text); letter-spacing: -0.5px; margin-bottom: 4px;
+}
+.greeting p {
+  font-size: 14px; color: var(--color-text-secondary);
+}
+
+/* ════════════════════════════════════════════════
+   KPI CARDS
+   ════════════════════════════════════════════════ */
+.kpi-row {
+  display: flex; gap: 14px; overflow-x: auto; padding-bottom: 4px;
+}
+.kpi-card {
+  flex: 1; min-width: 170px; background: var(--color-card-bg);
+  border-radius: var(--radius-md); padding: 16px;
+  border: 1px solid var(--color-border-light);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition);
+}
+.kpi-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+.kpi-icon {
+  width: 36px; height: 36px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 12px;
+}
+.kpi-icon svg { width: 18px; height: 18px; }
+.kpi-icon.sessions { background: #FFF0E6; color: #E65100; }
+.kpi-icon.prepped { background: #E8F5E9; color: #2E7D32; }
+.kpi-icon.commitments { background: #FFF8E1; color: #F57F17; }
+.kpi-icon.attention { background: #FFEBEE; color: #C62828; }
+.kpi-icon.cadence { background: #E8EAF6; color: #3F51B5; }
+.kpi-number {
+  font-size: 28px; font-weight: 700; color: var(--color-text);
+  line-height: 1; margin-bottom: 4px; font-family: var(--font-serif);
+}
+.kpi-label {
+  font-size: 13px; font-weight: 600; color: var(--color-text);
+  margin-bottom: 2px;
+}
+.kpi-sub {
+  font-size: 12px; color: var(--color-text-muted); margin-bottom: 8px;
+}
+.kpi-link {
+  font-size: 12px; font-weight: 600; color: var(--color-brand);
+  text-decoration: none; cursor: pointer;
+  transition: color var(--transition);
+}
+.kpi-link:hover { color: #A0321F; text-decoration: underline; }
+
+/* ════════════════════════════════════════════════
+   SECTION CARD (shared)
+   ════════════════════════════════════════════════ */
+.section-card {
+  background: var(--color-card-bg);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border-light);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+.section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 20px 14px; gap: 12px; flex-wrap: wrap;
+}
+.section-title {
+  font-family: var(--font-serif); font-size: 18px; font-weight: 700;
+  color: var(--color-text); letter-spacing: -0.3px;
+}
+.section-subtitle {
+  font-size: 13px; color: var(--color-text-muted); margin-left: 4px;
+}
+
+/* ════════════════════════════════════════════════
+   AI MORNING BRIEFING
+   ════════════════════════════════════════════════ */
+.briefing-header {
+  display: flex; align-items: center; gap: 12px;
+}
+.briefing-ai-icon {
+  width: 40px; height: 40px; border-radius: 10px;
+  background: linear-gradient(135deg, #7B61FF, #5B4FCC);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.briefing-ai-icon svg { width: 20px; height: 20px; color: #fff; }
+.briefing-title-group { flex: 1; }
+.briefing-title-group h2 {
+  font-family: var(--font-serif); font-size: 18px; font-weight: 700;
+  color: var(--color-text); letter-spacing: -0.3px;
+}
+.briefing-title-group p { font-size: 13px; color: var(--color-text-muted); }
+.btn-chat-briefing {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 16px; border-radius: 20px;
+  background: var(--color-topbar); color: #fff;
+  font-size: 12.5px; font-weight: 600;
+  border: none; cursor: pointer;
+  font-family: var(--font);
+  transition: all var(--transition);
+  text-decoration: none;
+}
+.btn-chat-briefing:hover { background: #333; }
+.btn-chat-briefing svg { width: 14px; height: 14px; }
+.briefing-body { padding: 0 20px 16px; }
+.briefing-text {
+  font-size: 14px; line-height: 1.65; color: var(--color-text-secondary);
+  margin-bottom: 16px;
+}
+.briefing-alert {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 12px 14px; border-radius: var(--radius-md);
+  margin-bottom: 10px;
+}
+.briefing-alert.high { background: #FFEBEE; }
+.briefing-alert.medium { background: #FFF3E0; }
+.alert-badge {
+  display: inline-flex; padding: 2px 8px; border-radius: 4px;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
+  flex-shrink: 0; margin-top: 2px;
+}
+.alert-badge.high { background: #C62828; color: #fff; }
+.alert-badge.medium { background: #E65100; color: #fff; }
+.alert-content { flex: 1; }
+.alert-content strong { font-size: 13px; font-weight: 600; color: var(--color-text); }
+.alert-content p { font-size: 13px; color: var(--color-text-secondary); line-height: 1.5; margin-top: 2px; }
+.briefing-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 20px; border-top: 1px solid var(--color-border-light);
+  font-size: 12px; color: var(--color-text-muted);
+}
+
+/* ════════════════════════════════════════════════
+   TAB GROUPS (reusable)
+   ════════════════════════════════════════════════ */
+.tab-group {
+  display: flex; align-items: center; gap: 2px;
+}
+.tab-pill {
+  padding: 6px 14px; border-radius: 20px;
+  font-size: 12.5px; font-weight: 500;
+  background: none; border: none; cursor: pointer;
+  color: var(--color-text-muted); font-family: var(--font);
+  transition: all var(--transition);
+}
+.tab-pill:hover { background: var(--color-tag-bg); color: var(--color-text-secondary); }
+.tab-pill.active { background: var(--color-topbar); color: #fff; font-weight: 600; }
+.tab-pill .count {
+  font-size: 11px; font-weight: 700; margin-left: 2px;
+}
+
+/* Toggle Group */
+.toggle-group {
+  display: inline-flex; border: 1px solid var(--color-border); border-radius: 8px;
+  overflow: hidden;
+}
+.toggle-btn {
+  padding: 7px 16px; font-size: 12.5px; font-weight: 500;
+  background: none; border: none; cursor: pointer;
+  color: var(--color-text-muted); font-family: var(--font);
+  transition: all var(--transition);
+}
+.toggle-btn:hover { background: var(--color-tag-bg); }
+.toggle-btn.active { background: var(--color-topbar); color: #fff; font-weight: 600; }
+
+/* ════════════════════════════════════════════════
+   CLIENT ATTENTION
+   ════════════════════════════════════════════════ */
+.client-attention-list { padding: 0 20px 16px; display: flex; flex-direction: column; gap: 10px; }
+.client-card {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 14px; border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-light);
+  transition: all var(--transition);
+}
+.client-card:hover { box-shadow: var(--shadow-md); border-color: var(--color-border); }
+.client-avatar {
+  width: 40px; height: 40px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0;
+}
+.client-info { flex: 1; min-width: 0; }
+.client-name-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
+.client-name { font-size: 14px; font-weight: 600; color: var(--color-text); }
+.client-company { font-size: 12px; color: var(--color-text-muted); }
+.client-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
+.status-pill {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 10px; border-radius: 20px;
+  font-size: 11px; font-weight: 600;
+}
+.status-pill.red { background: #FFEBEE; color: #C62828; }
+.status-pill.orange { background: #FFF3E0; color: #E65100; }
+.status-pill.yellow { background: #FFF8E1; color: #F57F17; }
+.status-pill.teal { background: #E0F2F1; color: #00695C; }
+.score-indicator {
+  display: inline-flex; align-items: center; gap: 3px;
+  font-size: 12px; font-weight: 700;
+}
+.score-indicator.down { color: #C62828; }
+.score-indicator.up { color: #2E7D32; }
+.client-desc { font-size: 13px; color: var(--color-text-secondary); line-height: 1.45; margin-bottom: 6px; }
+.client-sources { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+.source-tag {
+  display: inline-flex; padding: 2px 8px; border-radius: 4px;
+  font-size: 10.5px; font-weight: 500;
+  background: var(--color-tag-bg); color: var(--color-tag-text);
+}
+.client-actions { display: flex; gap: 8px; align-items: center; }
+.client-action-link {
+  font-size: 12px; font-weight: 600; color: var(--color-brand);
+  text-decoration: none; cursor: pointer;
+  transition: color var(--transition);
+}
+.client-action-link:hover { color: #A0321F; text-decoration: underline; }
+.client-action-link.muted { color: var(--color-text-muted); }
+.client-action-link.muted:hover { color: var(--color-text-secondary); }
+.view-all-link {
+  display: block; text-align: center; padding: 12px 20px;
+  font-size: 13px; font-weight: 600; color: var(--color-brand);
+  text-decoration: none; border-top: 1px solid var(--color-border-light);
+  transition: background var(--transition);
+}
+.view-all-link:hover { background: var(--color-brand-soft); }
+
+/* ════════════════════════════════════════════════
+   COMMITMENTS
+   ════════════════════════════════════════════════ */
+.commitments-controls {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px 12px; gap: 12px; flex-wrap: wrap;
+}
+.commitment-list { padding: 0 20px 16px; display: flex; flex-direction: column; gap: 10px; }
+.commitment-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 14px; border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-light);
+  transition: all var(--transition);
+}
+.commitment-item:hover { box-shadow: var(--shadow-md); border-color: var(--color-border); }
+.commitment-checkbox {
+  width: 20px; height: 20px; border-radius: 4px;
+  border: 2px solid var(--color-border); background: #fff;
+  flex-shrink: 0; cursor: pointer; margin-top: 2px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all var(--transition); appearance: none; -webkit-appearance: none;
+}
+.commitment-checkbox:checked {
+  background: var(--color-success); border-color: var(--color-success);
+}
+.commitment-checkbox:checked::after {
+  content: ''; width: 6px; height: 10px;
+  border: solid #fff; border-width: 0 2px 2px 0;
+  transform: rotate(45deg); margin-top: -2px;
+}
+.commitment-content { flex: 1; min-width: 0; }
+.commitment-text { font-size: 14px; font-weight: 500; color: var(--color-text); margin-bottom: 6px; line-height: 1.45; }
+.commitment-text.ai-detected { color: var(--color-text-muted); font-style: italic; }
+.commitment-meta {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+.meta-badge {
+  display: inline-flex; padding: 2px 8px; border-radius: 4px;
+  font-size: 10.5px; font-weight: 600;
+}
+.meta-badge.company { background: var(--color-tag-bg); color: var(--color-tag-text); }
+.meta-badge.coach { background: var(--color-topbar); color: #fff; font-size: 9px; letter-spacing: 0.5px; }
+.meta-badge.client-badge { background: #E8F5E9; color: #2E7D32; font-size: 9px; letter-spacing: 0.5px; }
+.commitment-date { font-size: 12px; color: var(--color-text-muted); }
+.commitment-date.overdue { color: #C62828; font-weight: 600; }
+.commitment-right {
+  display: flex; flex-direction: column; align-items: flex-end; gap: 8px;
+  flex-shrink: 0;
+}
+.urgency-badge {
+  display: inline-flex; padding: 3px 10px; border-radius: 4px;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
+}
+.urgency-badge.urgent { background: #FFEBEE; color: #C62828; }
+.urgency-badge.action { background: #E8F5E9; color: #2E7D32; }
+.urgency-badge.insight { background: #E8EAF6; color: #3F51B5; }
+.commitment-actions { display: flex; gap: 6px; }
+.commit-action-btn {
+  padding: 4px 10px; border-radius: var(--radius-sm);
+  font-size: 11px; font-weight: 500;
+  border: 1px solid var(--color-border); background: #fff;
+  color: var(--color-text-secondary); cursor: pointer;
+  font-family: var(--font); transition: all var(--transition);
+}
+.commit-action-btn:hover { border-color: var(--color-brand); color: var(--color-brand); }
+.commit-action-btn.primary {
+  background: var(--color-brand); color: #fff; border-color: var(--color-brand);
+}
+.commit-action-btn.primary:hover { background: #A0321F; }
+.completed-toggle {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 20px; font-size: 13px; color: var(--color-text-muted);
+  cursor: pointer; transition: color var(--transition);
+  border: none; background: none; font-family: var(--font); width: 100%;
+}
+.completed-toggle:hover { color: var(--color-text-secondary); }
+.completed-toggle svg { width: 16px; height: 16px; transition: transform var(--transition); }
+.completed-toggle.expanded svg { transform: rotate(180deg); }
+.btn-add-sm {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 6px 14px; border-radius: var(--radius-sm);
+  font-size: 12.5px; font-weight: 600; border: 1px solid var(--color-border);
+  background: #fff; color: var(--color-text-secondary); cursor: pointer;
+  font-family: var(--font); transition: all var(--transition);
+}
+.btn-add-sm:hover { border-color: var(--color-brand); color: var(--color-brand); }
+
+/* ════════════════════════════════════════════════
+   RECENT ACTIVITY
+   ════════════════════════════════════════════════ */
+.activity-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px; cursor: pointer; user-select: none;
+  transition: background var(--transition);
+}
+.activity-header:hover { background: var(--color-brand-soft); }
+.activity-header h2 {
+  font-family: var(--font-serif); font-size: 18px; font-weight: 700;
+  color: var(--color-text); display: flex; align-items: center; gap: 8px;
+}
+.activity-count-badge {
+  display: inline-flex; padding: 2px 10px; border-radius: 20px;
+  font-family: var(--font); font-size: 11px; font-weight: 600;
+  background: var(--color-tag-bg); color: var(--color-tag-text);
+}
+.activity-chevron { transition: transform var(--transition-smooth); }
+.activity-chevron.open { transform: rotate(180deg); }
+.activity-body { padding: 0 20px 16px; display: flex; flex-direction: column; gap: 0; }
+.activity-body.collapsed { display: none; }
+.activity-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 12px 0; border-bottom: 1px solid var(--color-border-light);
+}
+.activity-item:last-child { border-bottom: none; }
+.activity-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--color-brand); flex-shrink: 0; margin-top: 6px;
+}
+.activity-dot.green { background: var(--color-success); }
+.activity-dot.blue { background: #3F51B5; }
+.activity-dot.purple { background: var(--color-processing); }
+.activity-content { flex: 1; }
+.activity-text { font-size: 13.5px; color: var(--color-text); line-height: 1.45; }
+.activity-time { font-size: 12px; color: var(--color-text-muted); margin-top: 2px; }
+.activity-links { display: flex; gap: 10px; margin-top: 4px; }
+.activity-link {
+  font-size: 12px; font-weight: 600; color: var(--color-brand);
+  text-decoration: none; cursor: pointer;
+}
+.activity-link:hover { text-decoration: underline; }
+
+/* ════════════════════════════════════════════════
+   SESSION QUEUE (Right Column)
+   ════════════════════════════════════════════════ */
+.session-queue-header {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 8px;
+}
+.next-session-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 12px; border-radius: 20px;
+  font-size: 11.5px; font-weight: 600;
+  background: #E8F5E9; color: #2E7D32;
+}
+.next-session-pill .dot { width: 6px; height: 6px; border-radius: 50%; background: #4CAF50; }
+.session-day-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 20px 8px; font-size: 12.5px; font-weight: 600;
+  color: var(--color-text-secondary);
+}
+.session-day-count { font-size: 12px; color: var(--color-text-muted); }
+.session-list { padding: 0 20px 16px; display: flex; flex-direction: column; gap: 10px; }
+.session-card {
+  padding: 14px; border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-light);
+  border-left: 3px solid var(--color-brand);
+  transition: all var(--transition);
+}
+.session-card:hover { box-shadow: var(--shadow-md); }
+.session-card-top {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 6px;
+}
+.session-client-name { font-size: 14px; font-weight: 600; color: var(--color-text); }
+.session-time { font-size: 12px; color: var(--color-text-muted); }
+.session-time .countdown { color: var(--color-success); font-weight: 600; }
+.session-type { font-size: 12px; color: var(--color-text-muted); margin-bottom: 4px; }
+.session-focus {
+  font-size: 12.5px; color: var(--color-text-secondary); line-height: 1.4;
+  margin-bottom: 10px;
+}
+.session-focus strong { color: var(--color-text-muted); font-weight: 600; }
+.session-actions { display: flex; gap: 8px; }
+.session-btn {
+  padding: 5px 14px; border-radius: 20px;
+  font-size: 12px; font-weight: 600; border: none;
+  cursor: pointer; font-family: var(--font);
+  transition: all var(--transition);
+}
+.session-btn.prepped { background: #E8F5E9; color: #2E7D32; }
+.session-btn.prepped:hover { background: #C8E6C9; }
+.session-btn.prep-now { background: var(--color-brand); color: #fff; }
+.session-btn.prep-now:hover { background: #A0321F; }
+.session-btn.open-notes {
+  background: var(--color-brand-soft); color: var(--color-brand);
+  border: 1px solid var(--color-brand-light);
+}
+.session-btn.open-notes:hover { background: var(--color-brand-light); }
+.session-footer {
+  display: flex; gap: 10px; padding: 12px 20px;
+  border-top: 1px solid var(--color-border-light);
+}
+.session-footer-btn {
+  flex: 1; padding: 8px 0; border-radius: var(--radius-sm);
+  font-size: 12.5px; font-weight: 600; border: none;
+  cursor: pointer; font-family: var(--font);
+  transition: all var(--transition); text-align: center;
+}
+.session-footer-btn.add {
+  background: #fff; color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+}
+.session-footer-btn.add:hover { border-color: var(--color-brand); color: var(--color-brand); }
+.session-footer-btn.live {
+  background: var(--color-brand); color: #fff;
+}
+.session-footer-btn.live:hover { background: #A0321F; }
+.session-queue-meta {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 20px; font-size: 12px; color: var(--color-text-muted);
+}
+.session-queue-meta a {
+  color: var(--color-brand); text-decoration: none; font-weight: 600;
+}
+.session-queue-meta a:hover { text-decoration: underline; }
+
+/* ════════════════════════════════════════════════
+   KEEP WARM
+   ════════════════════════════════════════════════ */
+.keep-warm-header {
+  display: flex; align-items: center; gap: 10px;
+}
+.kw-count {
+  display: inline-flex; padding: 2px 10px; border-radius: 20px;
+  font-family: var(--font); font-size: 11px; font-weight: 600;
+  background: var(--color-tag-bg); color: var(--color-tag-text);
+}
+.kw-section {
+  padding: 0 20px; margin-bottom: 12px;
+}
+.kw-section-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 1px;
+  color: var(--color-text-muted); text-transform: uppercase;
+  margin-bottom: 8px; padding-top: 12px;
+  border-top: 1px solid var(--color-border-light);
+}
+.kw-section:first-of-type .kw-section-label { border-top: none; }
+.kw-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 0;
+}
+.kw-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; color: #fff; flex-shrink: 0;
+}
+.kw-info { flex: 1; }
+.kw-name { font-size: 13px; font-weight: 600; color: var(--color-text); }
+.kw-detail { font-size: 12px; color: var(--color-text-muted); }
+.kw-action {
+  width: 28px; height: 28px; border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border); background: #fff;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--color-text-muted);
+  transition: all var(--transition); flex-shrink: 0;
+}
+.kw-action:hover { border-color: var(--color-brand); color: var(--color-brand); }
+.kw-action svg { width: 14px; height: 14px; }
+.kw-footer {
+  padding: 10px 20px 16px;
+}
+
+/* ════════════════════════════════════════════════
+   UTILITY CLASSES
+   ════════════════════════════════════════════════ */
+.flex-between { display: flex; align-items: center; justify-content: space-between; }
+.gap-8 { gap: 8px; }
+.gap-12 { gap: 12px; }
+
+/* ── Scrollbar ── */
+.main-scroll::-webkit-scrollbar { width: 6px; }
+.main-scroll::-webkit-scrollbar-track { background: transparent; }
+.main-scroll::-webkit-scrollbar-thumb {
+  background: var(--color-border); border-radius: 3px;
+}
+.main-scroll::-webkit-scrollbar-thumb:hover { background: var(--color-text-muted); }
+
+/* ════════════════════════════════════════════════
+   RESPONSIVE (basic)
+   ════════════════════════════════════════════════ */
+@media (max-width: 1200px) {
+  .col-left { flex: 0 0 60%; max-width: 60%; }
+  .col-right { flex: 0 0 calc(40% - 28px); max-width: calc(40% - 28px); }
+}
+@media (max-width: 900px) {
+  .main-scroll { flex-direction: column; }
+  .col-left, .col-right { flex: none; max-width: 100%; }
+  .col-right { position: static; }
+}
+
+/* ── Clickable Client Names ── */
+.client-name { cursor: pointer; transition: color var(--transition); }
+.client-name:hover { color: var(--color-brand); text-decoration: underline; }
+.session-client-name { cursor: pointer; transition: color var(--transition); }
+.session-client-name:hover { color: var(--color-brand); }
+.kw-name { cursor: pointer; transition: color var(--transition); }
+.kw-name:hover { color: var(--color-brand); }
+.meta-badge.company { cursor: pointer; transition: all var(--transition); }
+.meta-badge.company:hover { background: var(--color-brand-soft); color: var(--color-brand); }
+</style>
+</head>
+<body>
+
+<!-- Skip Navigation -->
+<a href="#main-content" class="skip-nav">Skip to main content</a>
+
+<!-- ════════════════════════════════════════════════
+     TOP BAR
+     ════════════════════════════════════════════════ -->
+<nav class="topbar" role="navigation" aria-label="Primary navigation">
+  <a class="topbar-logo" href="#">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+    </div>
+    <span class="logo-text">CoachIQ</span>
+  </a>
+  <div class="topbar-nav">
+    <a class="topbar-nav-item active" href="#" aria-current="page">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Coach Cockpit
+    </a>
+    <a class="topbar-nav-item" href="ai-chat.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4-4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      Client Hub
+    </a>
+    <a class="topbar-nav-item" href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      Session Log
+    </a>
+    <a class="topbar-nav-item" href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+      My Coaching
+    </a>
+    <a class="topbar-nav-item" href="ai-chat.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      AI Chat
+    </a>
+    <a class="topbar-nav-item" href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+      Resources
+    </a>
+  </div>
+  <div class="topbar-right">
+    <button class="topbar-search-btn" aria-label="Search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </button>
+    <button class="topbar-notif-btn" aria-label="Notifications">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+    </button>
+    <div class="topbar-user" role="button" tabindex="0" aria-label="User menu">
+      <div class="avatar">SM</div>
+      <div>
+        <div class="user-name">Sarah Mitchell</div>
+        <div class="user-role">Coach</div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ════════════════════════════════════════════════
+     APP BODY (sidebar + main)
+     ════════════════════════════════════════════════ -->
+<div class="app-body">
+
+  <!-- Left Sidebar -->
+  <aside class="sidebar" role="navigation" aria-label="Sidebar navigation">
+    <div class="sidebar-logo" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" fill="none" stroke="#fff" stroke-width="2"/></svg>
+    </div>
+    <button class="sidebar-icon" aria-label="Search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </button>
+    <button class="sidebar-icon active" aria-label="Dashboard">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+    </button>
+    <button class="sidebar-icon" aria-label="Clients">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4-4v2"/><circle cx="9" cy="7" r="4"/></svg>
+    </button>
+    <div class="sidebar-divider"></div>
+    <span class="sidebar-section-label">Tools</span>
+    <button class="sidebar-icon" aria-label="AI Assistant">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 014 4v2H8V6a4 4 0 014-4z"/><rect x="4" y="8" width="16" height="12" rx="2"/><circle cx="9" cy="14" r="1"/><circle cx="15" cy="14" r="1"/></svg>
+    </button>
+    <button class="sidebar-icon" aria-label="File Repository">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+    </button>
+    <div class="sidebar-divider"></div>
+    <span class="sidebar-section-label">Res</span>
+    <button class="sidebar-icon" aria-label="Resource Library">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+    </button>
+    <button class="sidebar-icon" aria-label="Coach Academy">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1.66 2.69 3 6 3s6-1.34 6-3v-5"/></svg>
+    </button>
+    <div class="sidebar-spacer"></div>
+    <div class="sidebar-avatar" role="button" tabindex="0" aria-label="User profile">SM</div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content" id="main-content" role="main">
+    <div class="main-scroll">
+
+      <!-- ═══════ LEFT COLUMN ═══════ -->
+      <div class="col-left">
+
+        <!-- Greeting -->
+        <div class="greeting">
+          <h1>Good morning, Sarah</h1>
+          <p>Wednesday, March 12 — You have 4 sessions today and 2 clients that need attention.</p>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="kpi-row" role="region" aria-label="Key performance indicators">
+          <div class="kpi-card">
+            <div class="kpi-icon sessions">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            </div>
+            <div class="kpi-number">4</div>
+            <div class="kpi-label">Today's Sessions</div>
+            <div class="kpi-sub">Next: 9:30 AM — Sarah K.</div>
+            <a class="kpi-link" href="#">View schedule &rarr;</a>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon prepped">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </div>
+            <div class="kpi-number">2/4</div>
+            <div class="kpi-label">Sessions Prepped</div>
+            <div class="kpi-sub">2 still need prep</div>
+            <a class="kpi-link" href="#">Prep sessions &rarr;</a>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon commitments">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <div class="kpi-number">9</div>
+            <div class="kpi-label">Open Commitments</div>
+            <div class="kpi-sub">3 overdue</div>
+            <a class="kpi-link" href="#">Track progress &rarr;</a>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon attention">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            </div>
+            <div class="kpi-number">2</div>
+            <div class="kpi-label">Need Attention</div>
+            <div class="kpi-sub">1 engagement risk</div>
+            <a class="kpi-link" href="#">View details &rarr;</a>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon cadence">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4-4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+            </div>
+            <div class="kpi-number">10/12</div>
+            <div class="kpi-label">Clients On Cadence</div>
+            <div class="kpi-sub">2 need scheduling</div>
+            <a class="kpi-link" href="#">Schedule now &rarr;</a>
+          </div>
+        </div>
+
+        <!-- AI Morning Briefing -->
+        <section class="section-card" aria-labelledby="briefing-title">
+          <div class="section-header">
+            <div class="briefing-header">
+              <div class="briefing-ai-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 014 4v2H8V6a4 4 0 014-4z"/><rect x="4" y="8" width="16" height="12" rx="2"/><circle cx="9" cy="14" r="1" fill="currentColor"/><circle cx="15" cy="14" r="1" fill="currentColor"/></svg>
+              </div>
+              <div class="briefing-title-group">
+                <h2 id="briefing-title">AI Morning Briefing</h2>
+                <p>Personalized insights for today</p>
+              </div>
+            </div>
+            <a href="ai-chat.html" class="btn-chat-briefing" aria-label="Chat with briefing in AI Chat">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+              Chat with briefing
+            </a>
+          </div>
+          <div class="briefing-body">
+            <p class="briefing-text">
+              You have <strong>4 sessions today</strong> starting with Sarah Chen at 10:00 AM. Two clients have been flagged for attention,
+              and there are <strong>3 overdue commitments</strong> that need follow-up. Your coaching cadence this week is looking good with
+              10 of 12 clients on track.
+            </p>
+
+            <div class="briefing-alert high" role="alert">
+              <span class="alert-badge high">HIGH</span>
+              <div class="alert-content">
+                <strong>Marcus Reid — </strong>
+                <p>The past three sessions have shown a notable decline in engagement. Session attendance has been inconsistent and action item completion rate dropped from 85% to 40%. Consider addressing this directly in your next meeting.</p>
+              </div>
+            </div>
+            <div class="briefing-alert medium" role="alert">
+              <span class="alert-badge medium">MEDIUM</span>
+              <div class="alert-content">
+                <strong>Sarah Chen — </strong>
+                <p>You haven't connected with Sarah in 14 days. Her last session focused on a leadership transition that may benefit from timely follow-up support.</p>
+              </div>
+            </div>
+            <div class="briefing-alert medium" role="alert">
+              <span class="alert-badge medium">MEDIUM</span>
+              <div class="alert-content">
+                <strong>3 clients have unresolved action items — </strong>
+                <p>Action items from sessions with David Kim, Lisa Patel, and Jennifer Wu are past their target dates. A quick check-in could help maintain momentum.</p>
+              </div>
+            </div>
+          </div>
+          <div class="briefing-footer">
+            <span>Based on 3 watch items, 2 sessions, and 6 client health scores</span>
+            <span>Updated 6:47 AM</span>
+          </div>
+        </section>
+
+        <!-- Client Attention -->
+        <section class="section-card" aria-labelledby="client-attention-title">
+          <div class="section-header">
+            <h2 id="client-attention-title" class="section-title">Client Attention</h2>
+            <div class="tab-group" role="tablist" aria-label="Client attention filter">
+              <button class="tab-pill active" role="tab" aria-selected="true" data-tab="attention-all">All<span class="count">&middot;4</span></button>
+              <button class="tab-pill" role="tab" aria-selected="false" data-tab="attention-urgent">Urgent<span class="count">&middot;3</span></button>
+              <button class="tab-pill" role="tab" aria-selected="false" data-tab="attention-watch">Watch<span class="count">&middot;1</span></button>
+            </div>
+          </div>
+
+          <div class="client-attention-list" id="attention-all" role="tabpanel">
+            <!-- Marcus Reid -->
+            <div class="client-card" data-urgency="urgent">
+              <div class="client-avatar" style="background: linear-gradient(135deg, #E65100, #FF8A65);">MR</div>
+              <div class="client-info">
+                <div class="client-name-row">
+                  <span class="client-name">Marcus Reid</span>
+                  <span class="client-company">TechVentures</span>
+                </div>
+                <div class="client-badges">
+                  <span class="status-pill red">Missed Sessions</span>
+                  <span class="status-pill red">Stage 2 &middot; Danger</span>
+                  <span class="score-indicator down">&bull; 6.3 &#9660;</span>
+                </div>
+                <div class="client-desc">Engagement has declined over the past 3 sessions. Action item completion dropped significantly.</div>
+                <div class="client-sources">
+                  <span class="source-tag">session log</span>
+                  <span class="source-tag">EVE - session data</span>
+                </div>
+                <div class="client-actions">
+                  <a class="client-action-link" href="#">View Sessions</a>
+                  <a class="client-action-link muted" href="#">Snooze</a>
+                  <a class="client-action-link muted" href="#">&hellip;</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sarah Chen -->
+            <div class="client-card" data-urgency="urgent">
+              <div class="client-avatar" style="background: linear-gradient(135deg, #1565C0, #42A5F5);">SC</div>
+              <div class="client-info">
+                <div class="client-name-row">
+                  <span class="client-name">Sarah Chen</span>
+                  <span class="client-company">Northstar Capital</span>
+                </div>
+                <div class="client-badges">
+                  <span class="status-pill orange">Stalled Progress</span>
+                  <span class="status-pill orange">Stage 1 &middot; Concern</span>
+                  <span class="score-indicator up">&bull; 7.0 &#9650;</span>
+                </div>
+                <div class="client-desc">No contact in 14 days. Leadership transition work may need timely follow-up.</div>
+                <div class="client-sources">
+                  <span class="source-tag">session log</span>
+                  <span class="source-tag">EVE - session data</span>
+                </div>
+                <div class="client-actions">
+                  <a class="client-action-link" href="#">View Sessions</a>
+                  <a class="client-action-link muted" href="#">Snooze</a>
+                  <a class="client-action-link muted" href="#">&hellip;</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- David Kim -->
+            <div class="client-card" data-urgency="urgent">
+              <div class="client-avatar" style="background: linear-gradient(135deg, #2E7D32, #66BB6A);">DK</div>
+              <div class="client-info">
+                <div class="client-name-row">
+                  <span class="client-name">David Kim</span>
+                  <span class="client-company">Meridian Co</span>
+                </div>
+                <div class="client-badges">
+                  <span class="status-pill yellow">Session Gap</span>
+                  <span class="status-pill orange">Stage 1 &middot; Concern</span>
+                  <span class="score-indicator up">&bull; 7.4 &#9650;</span>
+                </div>
+                <div class="client-desc">Board presentation is this Thursday — may need extra preparation support.</div>
+                <div class="client-sources">
+                  <span class="source-tag">session log</span>
+                </div>
+                <div class="client-actions">
+                  <a class="client-action-link" href="#">View Sessions</a>
+                  <a class="client-action-link muted" href="#">Snooze</a>
+                  <a class="client-action-link muted" href="#">&hellip;</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Priya Nair -->
+            <div class="client-card" data-urgency="watch">
+              <div class="client-avatar" style="background: linear-gradient(135deg, #6A1B9A, #AB47BC);">PN</div>
+              <div class="client-info">
+                <div class="client-name-row">
+                  <span class="client-name">Priya Nair</span>
+                  <span class="client-company">Independent</span>
+                </div>
+                <div class="client-badges">
+                  <span class="status-pill teal">Engagement Drop-off</span>
+                  <span class="status-pill red">Stage 2 &middot; Danger</span>
+                  <span class="score-indicator down">&bull; 5.8 &#9660;</span>
+                </div>
+                <div class="client-desc">Engagement metrics have been trending downward. Recent sessions show reduced participation.</div>
+                <div class="client-sources">
+                  <span class="source-tag">EVE - session data</span>
+                </div>
+                <div class="client-actions">
+                  <a class="client-action-link" href="#">View Sessions</a>
+                  <a class="client-action-link muted" href="#">Snooze</a>
+                  <a class="client-action-link muted" href="#">&hellip;</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <a class="view-all-link" href="#">View All (4) &rarr;</a>
+        </section>
+
+        <!-- Commitments -->
+        <section class="section-card" aria-labelledby="commitments-title">
+          <div class="section-header">
+            <h2 id="commitments-title" class="section-title">Commitments</h2>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <a class="kpi-link" href="#">View all 9 &rarr;</a>
+              <button class="btn-add-sm">+ Add</button>
+            </div>
+          </div>
+          <div style="padding: 0 20px 12px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+            <div class="tab-group" role="tablist" aria-label="Commitment time filter">
+              <button class="tab-pill active" role="tab" aria-selected="true" data-tab="commit-overdue">Overdue<span class="count">&middot;3</span></button>
+              <button class="tab-pill" role="tab" aria-selected="false" data-tab="commit-thisweek">Due This Week</button>
+              <button class="tab-pill" role="tab" aria-selected="false" data-tab="commit-nextweek">Due Next Week</button>
+            </div>
+            <div class="toggle-group" role="tablist" aria-label="Commitment type toggle">
+              <button class="toggle-btn active" role="tab" aria-selected="true" data-toggle="coach">Coach Commitments</button>
+              <button class="toggle-btn" role="tab" aria-selected="false" data-toggle="client">Client Commitments</button>
+            </div>
+          </div>
+
+          <div class="commitment-list" id="commit-overdue" role="tabpanel">
+            <!-- Commitment 1 -->
+            <div class="commitment-item">
+              <input type="checkbox" class="commitment-checkbox" aria-label="Mark commitment complete: Share leadership framework resources">
+              <div class="commitment-content">
+                <div class="commitment-text">Share leadership framework resources from last session</div>
+                <div class="commitment-meta">
+                  <span class="meta-badge company">Apex Dynamics</span>
+                  <span class="meta-badge coach">COACH</span>
+                </div>
+                <div class="commitment-date overdue">Overdue — Mar 5 &middot; 7 days overdue</div>
+              </div>
+              <div class="commitment-right">
+                <span class="urgency-badge urgent">URGENT</span>
+                <div class="commitment-actions">
+                  <button class="commit-action-btn">Reschedule</button>
+                  <button class="commit-action-btn">Snooze</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Commitment 2 -->
+            <div class="commitment-item">
+              <input type="checkbox" class="commitment-checkbox" aria-label="Mark commitment complete: Follow up on 360 feedback results">
+              <div class="commitment-content">
+                <div class="commitment-text">Follow up on 360 feedback results discussion</div>
+                <div class="commitment-meta">
+                  <span class="meta-badge company">Northstar Capital</span>
+                  <span class="meta-badge coach">COACH</span>
+                </div>
+                <div class="commitment-date">Due Mar 14</div>
+              </div>
+              <div class="commitment-right">
+                <span class="urgency-badge action">ACTION</span>
+                <div class="commitment-actions">
+                  <button class="commit-action-btn">Reschedule</button>
+                  <button class="commit-action-btn">Snooze</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Commitment 3 (AI detected) -->
+            <div class="commitment-item" style="border-left: 3px solid #7B61FF;">
+              <input type="checkbox" class="commitment-checkbox" aria-label="Approve AI-detected commitment: Revisit Q2 development plan">
+              <div class="commitment-content">
+                <div class="commitment-text ai-detected">Revisit Q2 development plan — mentioned in last session</div>
+                <div class="commitment-meta">
+                  <span class="meta-badge company">Vertex Group</span>
+                  <span class="meta-badge coach">COACH</span>
+                </div>
+                <div class="commitment-date" style="color: var(--color-processing);">Suggested &middot; confirmed by session transcript, Feb 20</div>
+              </div>
+              <div class="commitment-right">
+                <span class="urgency-badge insight">INSIGHT</span>
+                <div class="commitment-actions">
+                  <button class="commit-action-btn primary">Approve</button>
+                  <button class="commit-action-btn">Edit</button>
+                  <button class="commit-action-btn">Dismiss</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- This Week panel (hidden) -->
+          <div class="commitment-list" id="commit-thisweek" role="tabpanel" style="display:none;">
+            <div class="commitment-item">
+              <input type="checkbox" class="commitment-checkbox" aria-label="Mark commitment complete: Prepare quarterly review deck">
+              <div class="commitment-content">
+                <div class="commitment-text">Prepare quarterly review deck for Lisa Patel</div>
+                <div class="commitment-meta">
+                  <span class="meta-badge company">Pinnacle Group</span>
+                  <span class="meta-badge coach">COACH</span>
+                </div>
+                <div class="commitment-date">Due Mar 14</div>
+              </div>
+              <div class="commitment-right">
+                <span class="urgency-badge action">ACTION</span>
+                <div class="commitment-actions">
+                  <button class="commit-action-btn">Reschedule</button>
+                  <button class="commit-action-btn">Snooze</button>
+                </div>
+              </div>
+            </div>
+            <div class="commitment-item">
+              <input type="checkbox" class="commitment-checkbox" aria-label="Mark commitment complete: Send development resources">
+              <div class="commitment-content">
+                <div class="commitment-text">Send development resources to Jennifer Wu</div>
+                <div class="commitment-meta">
+                  <span class="meta-badge company">Horizon Labs</span>
+                  <span class="meta-badge coach">COACH</span>
+                </div>
+                <div class="commitment-date">Due Mar 15</div>
+              </div>
+              <div class="commitment-right">
+                <span class="urgency-badge action">ACTION</span>
+                <div class="commitment-actions">
+                  <button class="commit-action-btn">Reschedule</button>
+                  <button class="commit-action-btn">Snooze</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Next Week panel (hidden) -->
+          <div class="commitment-list" id="commit-nextweek" role="tabpanel" style="display:none;">
+            <div class="commitment-item">
+              <input type="checkbox" class="commitment-checkbox" aria-label="Mark commitment complete: Review coaching engagement survey">
+              <div class="commitment-content">
+                <div class="commitment-text">Review coaching engagement survey results with team</div>
+                <div class="commitment-meta">
+                  <span class="meta-badge company">Meridian Co</span>
+                  <span class="meta-badge coach">COACH</span>
+                </div>
+                <div class="commitment-date">Due Mar 19</div>
+              </div>
+              <div class="commitment-right">
+                <span class="urgency-badge action">ACTION</span>
+                <div class="commitment-actions">
+                  <button class="commit-action-btn">Reschedule</button>
+                  <button class="commit-action-btn">Snooze</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button class="completed-toggle" aria-expanded="false" onclick="toggleCompleted(this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            <span>&#8635; 3 completed today — click to expand</span>
+          </button>
+          <div class="completed-items" style="display:none; padding: 0 20px 16px;">
+            <div class="commitment-item" style="opacity:0.6;">
+              <input type="checkbox" class="commitment-checkbox" checked disabled aria-label="Completed: Send meeting agenda to David Martinez">
+              <div class="commitment-content">
+                <div class="commitment-text" style="text-decoration: line-through;">Send meeting agenda to David Martinez</div>
+                <div class="commitment-meta"><span class="meta-badge company">Meridian Co</span><span class="meta-badge coach">COACH</span></div>
+                <div class="commitment-date">Completed today at 8:15 AM</div>
+              </div>
+            </div>
+            <div class="commitment-item" style="opacity:0.6;">
+              <input type="checkbox" class="commitment-checkbox" checked disabled aria-label="Completed: Review session notes for Jennifer Wu">
+              <div class="commitment-content">
+                <div class="commitment-text" style="text-decoration: line-through;">Review session notes for Jennifer Wu</div>
+                <div class="commitment-meta"><span class="meta-badge company">Horizon Labs</span><span class="meta-badge coach">COACH</span></div>
+                <div class="commitment-date">Completed today at 7:45 AM</div>
+              </div>
+            </div>
+            <div class="commitment-item" style="opacity:0.6;">
+              <input type="checkbox" class="commitment-checkbox" checked disabled aria-label="Completed: Update coaching plan for Marcus Reid">
+              <div class="commitment-content">
+                <div class="commitment-text" style="text-decoration: line-through;">Update coaching plan for Marcus Reid</div>
+                <div class="commitment-meta"><span class="meta-badge company">TechVentures</span><span class="meta-badge coach">COACH</span></div>
+                <div class="commitment-date">Completed today at 7:20 AM</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Recent Activity -->
+        <section class="section-card" aria-labelledby="activity-title">
+          <div class="activity-header" role="button" tabindex="0" aria-expanded="false" onclick="toggleActivity(this)" onkeydown="if(event.key==='Enter')toggleActivity(this)">
+            <h2 id="activity-title">
+              Recent Activity
+              <span class="activity-count-badge">Last 7 days (5 items)</span>
+            </h2>
+            <svg class="activity-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div class="activity-body collapsed" id="activity-panel">
+            <div class="activity-item">
+              <div class="activity-dot"></div>
+              <div class="activity-content">
+                <div class="activity-text"><strong>Session completed</strong> with Marcus Reid</div>
+                <div class="activity-time">2h ago</div>
+                <div class="activity-links">
+                  <a class="activity-link" href="#">View session &rarr;</a>
+                  <a class="activity-link" href="#">Review notes &rarr;</a>
+                </div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot blue"></div>
+              <div class="activity-content">
+                <div class="activity-text"><strong>Session notes added</strong> for Jennifer Wu</div>
+                <div class="activity-time">3h ago</div>
+                <div class="activity-links">
+                  <a class="activity-link" href="#">View notes &rarr;</a>
+                </div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot green"></div>
+              <div class="activity-content">
+                <div class="activity-text"><strong>Commitment completed</strong> by David Martinez</div>
+                <div class="activity-time">14h ago</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot purple"></div>
+              <div class="activity-content">
+                <div class="activity-text"><strong>Follow-up email sent</strong> to Sarah Chen</div>
+                <div class="activity-time">2d ago</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot green"></div>
+              <div class="activity-content">
+                <div class="activity-text"><strong>New client onboarded</strong> — Emma Rodriguez</div>
+                <div class="activity-time">3d ago</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div><!-- /col-left -->
+
+      <!-- ═══════ RIGHT COLUMN ═══════ -->
+      <div class="col-right">
+
+        <!-- Session Queue -->
+        <section class="section-card" aria-labelledby="session-queue-title">
+          <div class="section-header">
+            <div class="session-queue-header" style="width:100%;">
+              <h2 id="session-queue-title" class="section-title">Session Queue</h2>
+              <span class="next-session-pill"><span class="dot"></span>Next: Sarah Chen in 2h 15m</span>
+            </div>
+          </div>
+          <div style="padding: 0 20px 8px;">
+            <div class="tab-group" role="tablist" aria-label="Session queue time range">
+              <button class="tab-pill active" role="tab" aria-selected="true" data-tab="session-today">Today<span class="count">&middot;4</span></button>
+              <button class="tab-pill" role="tab" aria-selected="false" data-tab="session-48hrs">48hrs<span class="count">&middot;8</span></button>
+              <button class="tab-pill" role="tab" aria-selected="false" data-tab="session-week">This Week<span class="count">&middot;16</span></button>
+            </div>
+          </div>
+          <div class="session-day-header">
+            <span>Today — Mar 12</span>
+            <span class="session-day-count">4 &rarr;</span>
+          </div>
+
+          <div class="session-list" id="session-today" role="tabpanel">
+            <!-- Session 1 -->
+            <div class="session-card">
+              <div class="session-card-top">
+                <span class="session-client-name">Sarah Chen</span>
+                <span class="session-time">10:00 AM &middot; <span class="countdown">in 2h 15m</span></span>
+              </div>
+              <div class="session-type">Executive Coaching</div>
+              <div class="session-focus"><strong>Focus:</strong> Leadership transition milestone check</div>
+              <div class="session-actions">
+                <button class="session-btn prepped">Prepped</button>
+                <button class="session-btn open-notes">Open Notes</button>
+              </div>
+            </div>
+            <!-- Session 2 -->
+            <div class="session-card">
+              <div class="session-card-top">
+                <span class="session-client-name">Marcus Reid</span>
+                <span class="session-time">1:00 PM &middot; <span class="countdown">in 5h 15m</span></span>
+              </div>
+              <div class="session-type">Leadership Review</div>
+              <div class="session-focus"><strong>Focus:</strong> Delegation framework accountability</div>
+              <div class="session-actions">
+                <button class="session-btn prep-now">Prep Now</button>
+                <button class="session-btn open-notes">Open Notes</button>
+              </div>
+            </div>
+            <!-- Session 3 -->
+            <div class="session-card">
+              <div class="session-card-top">
+                <span class="session-client-name">David Kim</span>
+                <span class="session-time">3:30 PM &middot; <span class="countdown">in 7h 45m</span></span>
+              </div>
+              <div class="session-type">Strategy Session</div>
+              <div class="session-focus"><strong>Focus:</strong> Board presentation prep</div>
+              <div class="session-actions">
+                <button class="session-btn prepped">Prepped</button>
+                <button class="session-btn open-notes">Open Notes</button>
+              </div>
+            </div>
+            <!-- Session 4 -->
+            <div class="session-card">
+              <div class="session-card-top">
+                <span class="session-client-name">Lisa Patel</span>
+                <span class="session-time">5:00 PM &middot; <span class="countdown">in 9h 15m</span></span>
+              </div>
+              <div class="session-type">Executive Coaching</div>
+              <div class="session-focus"><strong>Focus:</strong> Q2 planning and goal alignment</div>
+              <div class="session-actions">
+                <button class="session-btn prep-now">Prep Now</button>
+                <button class="session-btn open-notes">Open Notes</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 48hrs panel (hidden) -->
+          <div class="session-list" id="session-48hrs" role="tabpanel" style="display:none;">
+            <div class="session-card">
+              <div class="session-card-top">
+                <span class="session-client-name">Jennifer Wu</span>
+                <span class="session-time">Tomorrow 9:00 AM</span>
+              </div>
+              <div class="session-type">Career Development</div>
+              <div class="session-focus"><strong>Focus:</strong> Promotion readiness assessment</div>
+              <div class="session-actions">
+                <button class="session-btn prep-now">Prep Now</button>
+                <button class="session-btn open-notes">Open Notes</button>
+              </div>
+            </div>
+            <div class="session-card">
+              <div class="session-card-top">
+                <span class="session-client-name">David Martinez</span>
+                <span class="session-time">Tomorrow 11:30 AM</span>
+              </div>
+              <div class="session-type">Executive Coaching</div>
+              <div class="session-focus"><strong>Focus:</strong> Team dynamics and conflict resolution</div>
+              <div class="session-actions">
+                <button class="session-btn prep-now">Prep Now</button>
+                <button class="session-btn open-notes">Open Notes</button>
+              </div>
+            </div>
+            <div class="session-card">
+              <div class="session-card-top">
+                <span class="session-client-name">Emma Rodriguez</span>
+                <span class="session-time">Tomorrow 2:00 PM</span>
+              </div>
+              <div class="session-type">Onboarding Session</div>
+              <div class="session-focus"><strong>Focus:</strong> Initial goals and coaching framework setup</div>
+              <div class="session-actions">
+                <button class="session-btn prep-now">Prep Now</button>
+                <button class="session-btn open-notes">Open Notes</button>
+              </div>
+            </div>
+            <div class="session-card">
+              <div class="session-card-top">
+                <span class="session-client-name">Priya Nair</span>
+                <span class="session-time">Tomorrow 4:00 PM</span>
+              </div>
+              <div class="session-type">Performance Review</div>
+              <div class="session-focus"><strong>Focus:</strong> Mid-year performance reflection</div>
+              <div class="session-actions">
+                <button class="session-btn prep-now">Prep Now</button>
+                <button class="session-btn open-notes">Open Notes</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- This Week panel (hidden) -->
+          <div class="session-list" id="session-week" role="tabpanel" style="display:none;">
+            <div class="session-card">
+              <div class="session-card-top">
+                <span class="session-client-name">William Park</span>
+                <span class="session-time">Thu 10:00 AM</span>
+              </div>
+              <div class="session-type">Strategy Session</div>
+              <div class="session-focus"><strong>Focus:</strong> Board presentation rehearsal</div>
+              <div class="session-actions">
+                <button class="session-btn prep-now">Prep Now</button>
+                <button class="session-btn open-notes">Open Notes</button>
+              </div>
+            </div>
+            <div class="session-card">
+              <div class="session-card-top">
+                <span class="session-client-name">James Okafar</span>
+                <span class="session-time">Thu 2:30 PM</span>
+              </div>
+              <div class="session-type">Leadership Coaching</div>
+              <div class="session-focus"><strong>Focus:</strong> Communication style and executive presence</div>
+              <div class="session-actions">
+                <button class="session-btn prep-now">Prep Now</button>
+                <button class="session-btn open-notes">Open Notes</button>
+              </div>
+            </div>
+            <div class="session-card">
+              <div class="session-card-top">
+                <span class="session-client-name">Thomas Moore</span>
+                <span class="session-time">Fri 9:00 AM</span>
+              </div>
+              <div class="session-type">Executive Coaching</div>
+              <div class="session-focus"><strong>Focus:</strong> Stakeholder management strategies</div>
+              <div class="session-actions">
+                <button class="session-btn prep-now">Prep Now</button>
+                <button class="session-btn open-notes">Open Notes</button>
+              </div>
+            </div>
+            <div class="session-card">
+              <div class="session-card-top">
+                <span class="session-client-name">Elena Rodriguez</span>
+                <span class="session-time">Fri 1:00 PM</span>
+              </div>
+              <div class="session-type">Career Development</div>
+              <div class="session-focus"><strong>Focus:</strong> Leadership pipeline and succession planning</div>
+              <div class="session-actions">
+                <button class="session-btn prep-now">Prep Now</button>
+                <button class="session-btn open-notes">Open Notes</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="session-footer">
+            <button class="session-footer-btn add">+ Add Session</button>
+            <button class="session-footer-btn live">Start Live Notes</button>
+          </div>
+          <div class="session-queue-meta">
+            <span>15 sessions this week</span>
+            <a href="#">View all &rarr;</a>
+          </div>
+        </section>
+
+        <!-- Keep Warm -->
+        <section class="section-card" aria-labelledby="keep-warm-title">
+          <div class="section-header">
+            <div class="keep-warm-header">
+              <h2 id="keep-warm-title" class="section-title">Keep Warm</h2>
+              <span class="kw-count">4 clients</span>
+            </div>
+          </div>
+
+          <div class="kw-section">
+            <div class="kw-section-label">Contact Due</div>
+            <div class="kw-item">
+              <div class="kw-avatar" style="background: linear-gradient(135deg, #00695C, #26A69A);">JO</div>
+              <div class="kw-info">
+                <div class="kw-name">James Okafar</div>
+                <div class="kw-detail">Last contact: 9 days ago</div>
+              </div>
+              <button class="kw-action" aria-label="Send message to James Okafar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+              </button>
+            </div>
+            <div class="kw-item">
+              <div class="kw-avatar" style="background: linear-gradient(135deg, #4E342E, #8D6E63);">TM</div>
+              <div class="kw-info">
+                <div class="kw-name">Thomas Moore</div>
+                <div class="kw-detail">Last contact: 12 days ago</div>
+              </div>
+              <button class="kw-action" aria-label="Send message to Thomas Moore">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="kw-section">
+            <div class="kw-section-label">Personal Moments</div>
+            <div class="kw-item">
+              <div class="kw-avatar" style="background: linear-gradient(135deg, #AD1457, #EC407A);">ER</div>
+              <div class="kw-info">
+                <div class="kw-name">Elena Rodriguez</div>
+                <div class="kw-detail">&#127874; Birthday this Friday &middot; &#11088; Work Anniversary Monday</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="kw-section">
+            <div class="kw-section-label">Client Milestones</div>
+            <div class="kw-item">
+              <div class="kw-avatar" style="background: linear-gradient(135deg, #283593, #5C6BC0);">WP</div>
+              <div class="kw-info">
+                <div class="kw-name">William Park</div>
+                <div class="kw-detail">Board presentation Thursday &middot; Q1 review with CEO this week</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="kw-footer">
+            <a class="view-all-link" href="#" style="border-top: 1px solid var(--color-border-light); margin: 0 -20px; padding: 12px 20px;">View All &rarr;</a>
+          </div>
+        </section>
+
+      </div><!-- /col-right -->
+
+    </div><!-- /main-scroll -->
+  </main>
+
+</div><!-- /app-body -->
+
+<script>
+/* ══════════════════════════════════════════════════
+   Navigation Helper
+   ══════════════════════════════════════════════════ */
+function navigateToClient(name, tab){
+  var url='ai-chat.html?client='+encodeURIComponent(name);
+  if(tab) url+='&tab='+encodeURIComponent(tab);
+  window.location.href=url;
+}
+
+/* ══════════════════════════════════════════════════
+   Tab Switching (generic)
+   ══════════════════════════════════════════════════ */
+document.querySelectorAll('.tab-group').forEach(group => {
+  const pills = group.querySelectorAll('.tab-pill');
+  pills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      // Update active state in this group
+      pills.forEach(p => { p.classList.remove('active'); p.setAttribute('aria-selected', 'false'); });
+      pill.classList.add('active');
+      pill.setAttribute('aria-selected', 'true');
+
+      const tabId = pill.dataset.tab;
+      if (!tabId) return;
+
+      // Handle Client Attention tabs
+      if (tabId.startsWith('attention-')) {
+        handleAttentionTabs(tabId);
+      }
+      // Handle Commitment tabs
+      if (tabId.startsWith('commit-')) {
+        handleCommitmentTabs(tabId);
+      }
+      // Handle Session Queue tabs
+      if (tabId.startsWith('session-')) {
+        handleSessionTabs(tabId);
+      }
+    });
+  });
+});
+
+function handleAttentionTabs(tabId) {
+  const cards = document.querySelectorAll('.client-attention-list .client-card');
+  cards.forEach(card => {
+    const urgency = card.dataset.urgency;
+    if (tabId === 'attention-all') {
+      card.style.display = '';
+    } else if (tabId === 'attention-urgent') {
+      card.style.display = urgency === 'urgent' ? '' : 'none';
+    } else if (tabId === 'attention-watch') {
+      card.style.display = urgency === 'watch' ? '' : 'none';
+    }
+  });
+}
+
+function handleCommitmentTabs(tabId) {
+  const panels = ['commit-overdue', 'commit-thisweek', 'commit-nextweek'];
+  panels.forEach(id => {
+    const panel = document.getElementById(id);
+    if (panel) panel.style.display = id === tabId ? '' : 'none';
+  });
+}
+
+function handleSessionTabs(tabId) {
+  const panels = ['session-today', 'session-48hrs', 'session-week'];
+  panels.forEach(id => {
+    const panel = document.getElementById(id);
+    if (panel) panel.style.display = id === tabId ? '' : 'none';
+  });
+  // Update day header
+  const dayHeader = document.querySelector('.session-day-header span:first-child');
+  const dayCount = document.querySelector('.session-day-count');
+  if (tabId === 'session-today') {
+    dayHeader.textContent = 'Today — Mar 12';
+    dayCount.textContent = '4 \u2192';
+  } else if (tabId === 'session-48hrs') {
+    dayHeader.textContent = 'Next 48 Hours';
+    dayCount.textContent = '8 \u2192';
+  } else {
+    dayHeader.textContent = 'This Week — Mar 10-16';
+    dayCount.textContent = '16 \u2192';
+  }
+}
+
+/* ══════════════════════════════════════════════════
+   Toggle Group (Coach / Client Commitments)
+   ══════════════════════════════════════════════════ */
+document.querySelectorAll('.toggle-group .toggle-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const group = btn.closest('.toggle-group');
+    group.querySelectorAll('.toggle-btn').forEach(b => {
+      b.classList.remove('active');
+      b.setAttribute('aria-selected', 'false');
+    });
+    btn.classList.add('active');
+    btn.setAttribute('aria-selected', 'true');
+
+    // Update badge labels
+    const isCoach = btn.dataset.toggle === 'coach';
+    document.querySelectorAll('.meta-badge.coach, .meta-badge.client-badge').forEach(badge => {
+      if (isCoach) {
+        badge.className = 'meta-badge coach';
+        badge.textContent = 'COACH';
+      } else {
+        badge.className = 'meta-badge client-badge';
+        badge.textContent = 'CLIENT';
+      }
+    });
+  });
+});
+
+/* ══════════════════════════════════════════════════
+   Completed Toggle
+   ══════════════════════════════════════════════════ */
+function toggleCompleted(btn) {
+  const items = btn.nextElementSibling;
+  const isExpanded = items.style.display !== 'none';
+  items.style.display = isExpanded ? 'none' : 'flex';
+  items.style.flexDirection = 'column';
+  items.style.gap = '10px';
+  btn.classList.toggle('expanded', !isExpanded);
+  btn.setAttribute('aria-expanded', !isExpanded);
+}
+
+/* ══════════════════════════════════════════════════
+   Recent Activity Expand/Collapse
+   ══════════════════════════════════════════════════ */
+function toggleActivity(header) {
+  const panel = document.getElementById('activity-panel');
+  const chevron = header.querySelector('.activity-chevron');
+  const isCollapsed = panel.classList.contains('collapsed');
+  panel.classList.toggle('collapsed', !isCollapsed);
+  chevron.classList.toggle('open', isCollapsed);
+  header.setAttribute('aria-expanded', isCollapsed);
+}
+
+/* ══════════════════════════════════════════════════
+   Checkbox interaction feedback
+   ══════════════════════════════════════════════════ */
+document.querySelectorAll('.commitment-checkbox').forEach(cb => {
+  cb.addEventListener('change', function() {
+    const item = this.closest('.commitment-item');
+    if (this.checked) {
+      item.style.opacity = '0.5';
+      const text = item.querySelector('.commitment-text');
+      if (text) text.style.textDecoration = 'line-through';
+    } else {
+      item.style.opacity = '1';
+      const text = item.querySelector('.commitment-text');
+      if (text) text.style.textDecoration = 'none';
+    }
+  });
+});
+
+/* ══════════════════════════════════════════════════
+   Wire Client Names to navigate to ai-chat.html
+   ══════════════════════════════════════════════════ */
+
+// Client Attention section — make client names clickable
+document.querySelectorAll('.client-card .client-name').forEach(function(el){
+  var name = el.textContent.trim();
+  el.addEventListener('click', function(){ navigateToClient(name); });
+});
+
+// Client Attention section — wire "View Sessions" links
+document.querySelectorAll('.client-card .client-action-link').forEach(function(link){
+  if(link.textContent.trim() === 'View Sessions'){
+    var card = link.closest('.client-card');
+    var nameEl = card.querySelector('.client-name');
+    if(nameEl){
+      var name = nameEl.textContent.trim();
+      link.href = 'ai-chat.html?client='+encodeURIComponent(name)+'&tab=sessions';
+      link.addEventListener('click', function(e){ e.preventDefault(); navigateToClient(name, 'sessions'); });
+    }
+  }
+});
+
+// Session Queue — make session client names clickable
+document.querySelectorAll('.session-client-name').forEach(function(el){
+  var name = el.textContent.trim();
+  el.addEventListener('click', function(){ navigateToClient(name); });
+});
+
+// Session Queue — wire "Open Notes" and "Prep Now" buttons
+document.querySelectorAll('.session-card').forEach(function(card){
+  var nameEl = card.querySelector('.session-client-name');
+  if(!nameEl) return;
+  var name = nameEl.textContent.trim();
+  card.querySelectorAll('.session-btn').forEach(function(btn){
+    if(btn.classList.contains('open-notes')){
+      btn.addEventListener('click', function(){ navigateToClient(name, 'ai-chat'); });
+    } else if(btn.classList.contains('prep-now')){
+      btn.addEventListener('click', function(){ navigateToClient(name, 'overview'); });
+    }
+  });
+});
+
+// Keep Warm — make names clickable
+document.querySelectorAll('.kw-name').forEach(function(el){
+  var name = el.textContent.trim();
+  el.addEventListener('click', function(){ navigateToClient(name); });
+});
+
+// Commitments — make company badges clickable
+document.querySelectorAll('.meta-badge.company').forEach(function(el){
+  var company = el.textContent.trim();
+  el.addEventListener('click', function(){ navigateToClient(company); });
+});
+</script>
+
+</body>
+</html>
