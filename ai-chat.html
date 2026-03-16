@@ -436,6 +436,18 @@ body {
   font-weight: 500; color: var(--color-tag-text);
 }
 .toolbar-pill svg { width: 13px; height: 13px; }
+.toolbar-action-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+  padding: 5px 12px; border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border); background: var(--color-card-bg);
+  font-size: 12px; font-weight: 600; color: var(--color-text-secondary);
+  cursor: pointer; font-family: var(--font); transition: all var(--transition);
+  white-space: nowrap;
+}
+.toolbar-action-btn:hover { border-color: var(--color-brand); color: var(--color-brand); background: var(--color-brand-soft); }
+.toolbar-action-btn svg { width: 14px; height: 14px; }
+.toolbar-action-btn.new-chat-btn { background: var(--color-brand); color: #fff; border-color: var(--color-brand); }
+.toolbar-action-btn.new-chat-btn:hover { background: #A0321F; border-color: #A0321F; }
 
 /* Chat Messages */
 .chat-messages {
@@ -1213,11 +1225,15 @@ body {
       <div class="chat-toolbar">
         <span class="chat-toolbar-title" id="chatTitle">New Chat</span>
         <div class="chat-toolbar-right">
+          <button class="toolbar-action-btn new-chat-btn" onclick="newChat()" aria-label="Start new chat" title="New Chat">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            New Chat
+          </button>
           <span class="toolbar-pill">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
             12 docs indexed
           </span>
-          <button class="history-toggle-btn" id="historyToggle" onclick="toggleHistory()" aria-label="Toggle conversation history" title="Toggle history panel" aria-expanded="true">
+          <button class="history-toggle-btn collapsed" id="historyToggle" onclick="toggleHistory()" aria-label="Toggle conversation history" title="Show history panel" aria-expanded="false">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="14" y="3" width="7" height="18" rx="1"/><line x1="3" y1="6" x2="10" y2="6"/><line x1="3" y1="12" x2="10" y2="12"/><line x1="3" y1="18" x2="10" y2="18"/></svg>
           </button>
         </div>
@@ -1267,7 +1283,7 @@ body {
     </div>
 
     <!-- Right: History Panel (collapsible) -->
-    <aside class="history-panel" aria-label="Conversation history">
+    <aside class="history-panel collapsed" aria-label="Conversation history">
       <div class="history-header">
         <span class="history-header-title">Conversations</span>
         <button class="history-new-btn" onclick="newChat()" title="New Chat">
@@ -1865,7 +1881,12 @@ function parseUrlParams(){
 // ═══ INIT ═══
 renderDocumentsTable();
 renderClientHub();
-parseUrlParams();
+// Default to Client Hub view on fresh load (no URL params)
+if(!window.location.search){
+  showClientHub();
+} else {
+  parseUrlParams();
+}
 </script>
 </body>
 </html>
