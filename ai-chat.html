@@ -50,50 +50,91 @@ body {
   background: var(--color-bg);
   color: var(--color-text);
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   -webkit-font-smoothing: antialiased;
 }
 
 /* ════════════════════════════════════════════════
-   TOP NAVIGATION BAR
+   LEFT SIDEBAR NAVIGATION
    ════════════════════════════════════════════════ */
-.topbar {
+.sidebar {
   display: flex;
-  align-items: center;
-  height: 54px;
+  flex-direction: column;
+  width: 220px;
+  min-height: 100vh;
   background: var(--color-topbar);
-  padding: 0 24px;
+  padding: 16px 0;
   flex-shrink: 0;
   z-index: 100;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
 }
-.topbar-logo {
+.sidebar.collapsed { width: 60px; }
+
+.sidebar-logo-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px 16px 16px;
+  flex-shrink: 0;
+}
+.sidebar-logo {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-right: 32px;
-  flex-shrink: 0;
+  min-width: 0;
 }
-.topbar-logo .logo-icon {
+.sidebar-logo .logo-icon {
   width: 32px; height: 32px;
   background: var(--color-brand);
   border-radius: 8px;
   display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
 }
-.topbar-logo .logo-icon svg { width: 18px; height: 18px; fill: #fff; }
-.topbar-logo .logo-text {
+.sidebar-logo .logo-icon svg { width: 18px; height: 18px; fill: #fff; }
+.sidebar-logo .logo-text {
   font-size: 16px; font-weight: 700; color: #fff; letter-spacing: 0.5px;
+  white-space: nowrap;
+  opacity: 1;
+  transition: opacity 0.2s ease, width 0.3s ease;
 }
-.topbar-nav {
+.sidebar.collapsed .sidebar-logo .logo-text { opacity: 0; width: 0; overflow: hidden; }
+.sidebar.collapsed .sidebar-logo-row { justify-content: center; padding: 0 0 16px; }
+
+.sidebar-toggle {
   display: flex;
   align-items: center;
+  justify-content: center;
+  width: 28px; height: 28px;
+  padding: 0;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: var(--color-topbar-text);
+  transition: all var(--transition);
+  flex-shrink: 0;
+}
+.sidebar-toggle:hover { color: #fff; background: rgba(255,255,255,0.15); }
+.sidebar-toggle:focus-visible {
+  outline: 2px solid var(--color-brand) !important;
+  outline-offset: 2px;
+}
+.sidebar-toggle svg { width: 16px; height: 16px; transition: transform 0.3s ease; }
+.sidebar.collapsed .sidebar-toggle svg { transform: rotate(180deg); }
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
   gap: 2px;
+  padding: 0 8px;
   flex: 1;
 }
-.topbar-nav-item {
+.sidebar-nav-item {
   display: flex;
   align-items: center;
-  gap: 7px;
-  padding: 8px 16px;
+  gap: 10px;
+  padding: 10px 12px;
   border-radius: var(--radius-sm);
   color: var(--color-topbar-text);
   text-decoration: none;
@@ -105,61 +146,112 @@ body {
   border: none;
   background: none;
   font-family: var(--font);
+  overflow: hidden;
 }
-.topbar-nav-item:hover {
+.sidebar-nav-item:hover {
   background: var(--color-topbar-hover);
   color: #ddd;
 }
-.topbar-nav-item.active {
+.sidebar-nav-item.active {
   background: rgba(255,255,255,0.1);
   color: var(--color-topbar-active);
 }
-.topbar-nav-item svg {
-  width: 16px; height: 16px; opacity: 0.7; flex-shrink: 0;
+.sidebar-nav-item svg {
+  width: 18px; height: 18px; opacity: 0.7; flex-shrink: 0;
 }
-.topbar-nav-item.active svg { opacity: 1; }
-.topbar-right {
+.sidebar-nav-item.active svg { opacity: 1; }
+.sidebar-nav-item span {
+  opacity: 1;
+  transition: opacity 0.2s ease;
+  overflow: hidden;
+}
+.sidebar.collapsed .sidebar-nav-item span {
+  opacity: 0;
+  width: 0;
+}
+.sidebar.collapsed .sidebar-nav-item {
+  justify-content: center;
+  padding: 10px 0;
+}
+
+.sidebar-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 8px 0;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  margin-top: 8px;
+}
+.sidebar-bottom-btn {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-left: auto;
-}
-.topbar-search-btn, .topbar-notif-btn {
-  width: 34px; height: 34px;
+  gap: 10px;
+  padding: 10px 12px;
   border-radius: var(--radius-sm);
   border: none;
   background: none;
-  display: flex; align-items: center; justify-content: center;
   cursor: pointer;
   color: var(--color-topbar-text);
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 500;
   transition: all var(--transition);
+  white-space: nowrap;
+  overflow: hidden;
 }
-.topbar-search-btn:hover, .topbar-notif-btn:hover {
+.sidebar-bottom-btn:hover {
   background: var(--color-topbar-hover);
   color: #fff;
 }
-.topbar-user {
+.sidebar-bottom-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+.sidebar-bottom-btn span {
+  opacity: 1;
+  transition: opacity 0.2s ease;
+  overflow: hidden;
+}
+.sidebar.collapsed .sidebar-bottom-btn span { opacity: 0; width: 0; }
+.sidebar.collapsed .sidebar-bottom-btn { justify-content: center; padding: 10px 0; }
+
+.sidebar-user {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-left: 8px;
-  padding: 4px 8px 4px 4px;
+  gap: 10px;
+  padding: 10px 12px;
   border-radius: var(--radius-sm);
   cursor: pointer;
   transition: all var(--transition);
+  overflow: hidden;
 }
-.topbar-user:hover { background: var(--color-topbar-hover); }
-.topbar-user .avatar {
+.sidebar-user:hover { background: var(--color-topbar-hover); }
+.sidebar-user .avatar {
   width: 30px; height: 30px; border-radius: 50%;
   background: linear-gradient(135deg, #2E7D32, #4CAF50);
   display: flex; align-items: center; justify-content: center;
   font-size: 11px; font-weight: 600; color: #fff;
+  flex-shrink: 0;
 }
-.topbar-user .user-name {
+.sidebar-user .user-info {
+  opacity: 1;
+  transition: opacity 0.2s ease;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.sidebar.collapsed .sidebar-user .user-info { opacity: 0; width: 0; }
+.sidebar.collapsed .sidebar-user { justify-content: center; padding: 10px 0; }
+.sidebar-user .user-name {
   font-size: 12.5px; font-weight: 600; color: #fff;
 }
-.topbar-user .user-role {
+.sidebar-user .user-role {
   font-size: 10px; color: var(--color-topbar-text);
+}
+
+/* Main content area (right of sidebar) */
+.main-content-area {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 
 /* ════════════════════════════════════════════════
@@ -432,6 +524,187 @@ body {
   .ov-kpi-row { grid-template-columns:repeat(2,1fr); }
   .overview-scroll { padding:16px; }
 }
+
+/* ════════════════════════════════════════════════
+   RELATIONSHIP TAB
+   ════════════════════════════════════════════════ */
+.rel-scroll { flex:1; overflow-y:auto; padding:24px 28px 40px; }
+.rel-breadcrumb { font-size:12px; color:var(--color-text-muted); margin-bottom:16px; }
+.rel-breadcrumb a { color:var(--color-brand); text-decoration:none; cursor:pointer; }
+.rel-breadcrumb a:hover { text-decoration:underline; }
+
+/* Client Header */
+.rel-header { display:flex; align-items:center; gap:16px; margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid var(--color-border-light); }
+.rel-avatar { width:56px; height:56px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:700; color:#fff; flex-shrink:0; }
+.rel-header-info { flex:1; }
+.rel-header-name { font-family:var(--font-serif); font-size:20px; font-weight:700; color:var(--color-text); }
+.rel-header-role { font-size:13px; color:var(--color-text-secondary); margin-top:2px; }
+.rel-header-badges { display:flex; gap:6px; margin-top:6px; }
+.rel-badge { font-size:10px; font-weight:700; padding:3px 10px; border-radius:12px; }
+.rel-badge.active { background:#E8F5E9; color:#2E7D32; }
+.rel-badge.biweekly { background:var(--color-tag-bg); color:var(--color-tag-text); }
+.rel-badge.at-risk { background:#FFF5F5; color:#C62828; }
+.rel-header-stats { display:flex; gap:16px; flex-shrink:0; }
+.rel-stat { text-align:center; padding:6px 12px; }
+.rel-stat-val { font-size:18px; font-weight:700; color:var(--color-text); }
+.rel-stat-label { font-size:10px; color:var(--color-text-muted); text-transform:uppercase; letter-spacing:0.4px; }
+.rel-header-actions { display:flex; gap:8px; flex-shrink:0; }
+
+/* Sub-tabs */
+.rel-subtabs { display:flex; gap:0; border-bottom:2px solid var(--color-border-light); margin-bottom:20px; }
+.rel-subtab { padding:10px 20px; font-size:14px; font-weight:600; color:var(--color-text-muted); background:none; border:none; border-bottom:2px solid transparent; margin-bottom:-2px; cursor:pointer; font-family:var(--font); transition:all var(--transition); }
+.rel-subtab.active { color:var(--color-brand); border-bottom-color:var(--color-brand); }
+.rel-subtab:hover:not(.active) { color:var(--color-text); }
+.rel-subpanel { display:none; }
+.rel-subpanel.active { display:block; }
+
+/* Two-column layout */
+.rel-columns { display:grid; grid-template-columns:58% 42%; gap:20px; }
+
+/* Section card */
+.rel-card { background:var(--color-card-bg); border:1px solid var(--color-border); border-radius:var(--radius-md); padding:20px; margin-bottom:16px; }
+.rel-card:last-child { margin-bottom:0; }
+.rel-card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+.rel-card-header h3 { font-size:15px; font-weight:700; color:var(--color-text); }
+.rel-card-header .ai-tag { font-size:10px; font-weight:600; padding:2px 8px; border-radius:3px; background:var(--color-brand-soft); color:var(--color-brand); margin-left:8px; }
+.rel-card-header .rel-action { font-size:12px; font-weight:600; color:var(--color-brand); cursor:pointer; text-decoration:none; border:none; background:none; font-family:var(--font); }
+.rel-card-header .rel-action:hover { text-decoration:underline; }
+.rel-card p { font-size:13px; line-height:1.7; color:var(--color-text-secondary); margin-bottom:10px; }
+.rel-card p:last-child { margin-bottom:0; }
+.rel-card p strong { color:var(--color-text); }
+.rel-card-meta { font-size:11px; color:var(--color-text-muted); margin-top:10px; border-top:1px solid var(--color-border-light); padding-top:8px; }
+
+/* Relationship Health Score */
+.rel-health { display:flex; align-items:center; gap:16px; margin-bottom:12px; }
+.rel-health-score { font-size:48px; font-weight:800; color:var(--color-text); line-height:1; }
+.rel-health-trend { font-size:14px; font-weight:600; }
+.rel-health-trend.up { color:var(--color-success); }
+.rel-health-trend.down { color:#C62828; }
+.rel-health-details { font-size:12px; color:var(--color-text-secondary); line-height:1.6; }
+.rel-health-link { font-size:12px; color:var(--color-brand); cursor:pointer; margin-top:4px; display:inline-block; }
+
+/* Personal Moments */
+.rel-moment { display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--color-border-light); }
+.rel-moment:last-child { border-bottom:none; }
+.rel-moment-date { font-size:12px; font-weight:600; color:var(--color-text); min-width:110px; }
+.rel-moment-text { font-size:13px; color:var(--color-text-secondary); flex:1; }
+.rel-moment-source { font-size:11px; color:var(--color-text-muted); }
+.rel-moment-add { font-size:12px; color:var(--color-brand); cursor:pointer; margin-top:8px; display:inline-block; }
+
+/* Communication Preferences */
+.rel-pref { display:flex; align-items:flex-start; gap:8px; padding:8px 0; font-size:13px; color:var(--color-text-secondary); line-height:1.5; }
+.rel-pref::before { content:'•'; color:var(--color-brand); font-weight:700; flex-shrink:0; margin-top:0; }
+
+/* Coaching Themes / Wins / Watch Items */
+.rel-list-item { display:flex; align-items:flex-start; gap:8px; padding:6px 0; font-size:13px; color:var(--color-text-secondary); line-height:1.5; }
+.rel-list-bullet { flex-shrink:0; margin-top:3px; }
+.rel-list-bullet.theme { color:var(--color-brand); }
+.rel-list-bullet.win { color:var(--color-success); }
+.rel-list-bullet.watch { color:#E65100; }
+
+/* Growth Opportunities */
+.rel-growth { padding:12px 0; border-bottom:1px solid var(--color-border-light); }
+.rel-growth:last-child { border-bottom:none; }
+.rel-growth p { margin-bottom:4px; }
+.rel-growth .observed { font-size:11px; color:var(--color-text-muted); font-style:italic; }
+
+/* Notes textarea */
+.rel-notes-area { width:100%; min-height:120px; border:1px solid var(--color-border); border-radius:var(--radius-sm); padding:12px; font-family:var(--font); font-size:13px; color:var(--color-text); background:var(--color-bg); resize:vertical; }
+.rel-notes-area:focus { outline:none; border-color:var(--color-brand); box-shadow:0 0 0 3px var(--color-brand-soft); }
+.rel-notes-hint { font-size:11px; color:var(--color-text-muted); margin-top:4px; }
+
+/* Memories sub-tab */
+.rel-memories-layout { display:grid; grid-template-columns:60% 40%; gap:20px; }
+.rel-memory-section { margin-bottom:20px; }
+.rel-memory-section h4 { font-size:14px; font-weight:700; color:var(--color-text); margin-bottom:8px; }
+.rel-memory-section p { font-size:13px; line-height:1.7; color:var(--color-text-secondary); }
+.rel-memory-edit { background:var(--color-card-bg); border:1px solid var(--color-border); border-radius:var(--radius-md); padding:20px; position:sticky; top:0; }
+.rel-memory-edit h3 { font-size:15px; font-weight:700; color:var(--color-text); margin-bottom:12px; }
+.rel-memory-input { width:100%; min-height:80px; border:1px solid var(--color-border); border-radius:var(--radius-sm); padding:10px; font-family:var(--font); font-size:13px; color:var(--color-text); background:var(--color-bg); resize:vertical; margin-bottom:12px; }
+.rel-memory-input:focus { outline:none; border-color:var(--color-brand); }
+.rel-past-edit { display:flex; gap:10px; padding:10px 0; border-bottom:1px solid var(--color-border-light); }
+.rel-past-edit:last-child { border-bottom:none; }
+.rel-past-edit-avatar { width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; flex-shrink:0; }
+.rel-past-edit-content { flex:1; }
+.rel-past-edit-meta { font-size:11px; color:var(--color-text-muted); margin-bottom:2px; }
+.rel-past-edit-text { font-size:12px; color:var(--color-text-secondary); }
+
+@media(max-width:1100px){
+  .rel-columns,.rel-memories-layout { grid-template-columns:1fr; }
+}
+
+/* ════════════════════════════════════════════════
+   COMMITMENTS TAB
+   ════════════════════════════════════════════════ */
+.commit-scroll { flex:1; overflow-y:auto; padding:24px 28px 40px; }
+.commit-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
+.commit-header h2 { font-family:var(--font-serif); font-size:20px; font-weight:700; }
+.commit-filters { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+.commit-filter { padding:6px 14px; border-radius:20px; font-size:12px; font-weight:600; border:1px solid var(--color-border); background:var(--color-card-bg); color:var(--color-text-secondary); cursor:pointer; font-family:var(--font); transition:all var(--transition); }
+.commit-filter.active { background:var(--color-text); color:#fff; border-color:var(--color-text); }
+.commit-group-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--color-text-muted); margin:16px 0 8px; }
+
+/* ════════════════════════════════════════════════
+   GOAL TRACKER TAB
+   ════════════════════════════════════════════════ */
+.goals-scroll { flex:1; overflow-y:auto; padding:24px 28px 40px; }
+.goal-card { background:var(--color-card-bg); border:1px solid var(--color-border); border-radius:var(--radius-md); padding:20px; margin-bottom:16px; }
+.goal-card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+.goal-card-header h3 { font-size:15px; font-weight:700; color:var(--color-text); }
+.goal-progress { height:6px; background:var(--color-tag-bg); border-radius:3px; overflow:hidden; margin-bottom:8px; }
+.goal-progress-bar { height:100%; border-radius:3px; transition:width 0.3s ease; }
+.goal-progress-bar.green { background:var(--color-success); }
+.goal-progress-bar.yellow { background:#F57F17; }
+.goal-progress-bar.red { background:#C62828; }
+.goal-milestones { list-style:none; padding:0; margin:0; }
+.goal-milestone { display:flex; align-items:center; gap:8px; padding:6px 0; font-size:13px; color:var(--color-text-secondary); }
+.goal-milestone-check { width:16px; height:16px; border-radius:50%; border:2px solid var(--color-border); flex-shrink:0; }
+.goal-milestone-check.done { background:var(--color-success); border-color:var(--color-success); }
+
+/* ════════════════════════════════════════════════
+   NOTES TAB
+   ════════════════════════════════════════════════ */
+.notes-scroll { flex:1; overflow-y:auto; padding:24px 28px 40px; }
+.notes-editor { background:var(--color-card-bg); border:1px solid var(--color-border); border-radius:var(--radius-md); padding:20px; margin-bottom:16px; }
+.notes-editor-toolbar { display:flex; gap:4px; margin-bottom:12px; padding-bottom:10px; border-bottom:1px solid var(--color-border-light); }
+.notes-editor-btn { width:30px; height:30px; display:flex; align-items:center; justify-content:center; border:none; background:none; border-radius:var(--radius-sm); color:var(--color-text-muted); cursor:pointer; }
+.notes-editor-btn:hover { background:var(--color-tag-bg); color:var(--color-text); }
+.notes-editor-btn svg { width:16px; height:16px; }
+.notes-textarea { width:100%; min-height:200px; border:none; padding:0; font-family:var(--font); font-size:14px; color:var(--color-text); line-height:1.7; background:transparent; resize:none; }
+.notes-textarea:focus { outline:none; }
+.notes-list { margin-top:16px; }
+.note-item { background:var(--color-card-bg); border:1px solid var(--color-border); border-radius:var(--radius-md); padding:16px 20px; margin-bottom:10px; cursor:pointer; transition:all var(--transition); }
+.note-item:hover { border-color:var(--color-brand); box-shadow:var(--shadow-sm); }
+.note-item-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
+.note-item-title { font-size:14px; font-weight:600; color:var(--color-text); }
+.note-item-date { font-size:11px; color:var(--color-text-muted); }
+.note-item-preview { font-size:13px; color:var(--color-text-secondary); line-height:1.5; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.note-item-tags { display:flex; gap:4px; margin-top:8px; }
+
+/* ════════════════════════════════════════════════
+   UPDATED CLIENT HUB TABLE
+   ════════════════════════════════════════════════ */
+.hub-kpi-row { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:24px; }
+.hub-kpi { background:var(--color-card-bg); border:1px solid var(--color-border); border-radius:var(--radius-md); padding:16px 20px; position:relative; border-top:3px solid transparent; }
+.hub-kpi.critical { border-top-color:#C62828; }
+.hub-kpi.on-track { border-top-color:var(--color-success); }
+.hub-kpi.warning { border-top-color:#E65100; }
+.hub-kpi-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.hub-kpi-label { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; color:var(--color-text-muted); }
+.hub-kpi-status { font-size:10px; font-weight:700; padding:2px 8px; border-radius:10px; }
+.hub-kpi-status.critical { background:#FFEBEE; color:#C62828; }
+.hub-kpi-status.on-track { background:#E8F5E9; color:#2E7D32; }
+.hub-kpi-status.warning { background:#FFF3E0; color:#E65100; }
+.hub-kpi-value { font-size:28px; font-weight:700; color:var(--color-text); line-height:1.1; }
+.hub-kpi-value small { font-size:14px; font-weight:400; color:var(--color-text-muted); }
+.hub-kpi-change { font-size:12px; margin-top:4px; }
+.hub-kpi-change.positive { color:var(--color-success); }
+.hub-kpi-change.negative { color:#C62828; }
+.hub-kpi-breakdown { margin-top:10px; padding-top:8px; border-top:1px solid var(--color-border-light); }
+.hub-kpi-breakdown-item { display:flex; align-items:center; justify-content:space-between; padding:2px 0; font-size:11px; }
+.hub-kpi-breakdown-label { color:var(--color-text-muted); display:flex; align-items:center; gap:6px; }
+.hub-kpi-breakdown-dot { width:6px; height:6px; border-radius:50%; }
+.hub-kpi-breakdown-val { font-weight:600; color:var(--color-text); }
 
 /* ════════════════════════════════════════════════
    AI CHAT LAYOUT
@@ -1235,7 +1508,7 @@ body {
   .table-action-btn { min-width:44px; min-height:44px; }
   .filter-chip { min-height:44px; }
   .tab-btn { min-height:44px; }
-  .topbar-nav-item { min-height:44px; }
+  .sidebar-nav-item { min-height:44px; }
   .history-item-action { min-width:44px; min-height:44px; }
 }
 
@@ -1247,7 +1520,11 @@ body {
 @media (max-width:900px) {
   .quick-actions { grid-template-columns:repeat(2,1fr); }
   .history-panel { width:220px; min-width:220px; }
-  .topbar-nav-item span { display:none; }
+  .sidebar { width:60px; }
+  .sidebar .sidebar-nav-item span { opacity:0; width:0; }
+  .sidebar .sidebar-bottom-btn span { opacity:0; width:0; }
+  .sidebar .sidebar-user .user-info { opacity:0; width:0; }
+  .sidebar .sidebar-logo .logo-text { opacity:0; width:0; }
   .docs-controls { flex-direction:column; align-items:stretch; }
 }
 </style>
@@ -1257,56 +1534,68 @@ body {
 <!-- Skip Navigation (WCAG 2.4.1) -->
 <a href="#main-content" class="skip-nav">Skip to main content</a>
 
-<!-- ═══ TOP NAVIGATION BAR ═══ -->
-<nav class="topbar" aria-label="Main navigation">
-  <div class="topbar-logo">
-    <div class="logo-icon">
-      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+<!-- ═══ LEFT SIDEBAR NAVIGATION ═══ -->
+<nav class="sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
+  <div class="sidebar-logo-row">
+    <div class="sidebar-logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+      </div>
+      <span class="logo-text">CoachIQ</span>
     </div>
-    <span class="logo-text">CoachIQ</span>
+    <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Collapse sidebar" aria-expanded="true" aria-controls="sidebar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
   </div>
-  <div class="topbar-nav" role="menubar" aria-label="Platform navigation">
-    <button class="topbar-nav-item" role="menuitem" aria-label="Coach Cockpit">
+
+  <div class="sidebar-nav" role="menubar" aria-label="Platform navigation">
+    <button class="sidebar-nav-item" role="menuitem" aria-label="Coach Cockpit">
       <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
       <span>Coach Cockpit</span>
     </button>
-    <button class="topbar-nav-item active" role="menuitem" aria-current="page" aria-label="Client Hub">
+    <button class="sidebar-nav-item active" role="menuitem" aria-current="page" aria-label="Client Hub">
       <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       <span>Client Hub</span>
     </button>
-    <button class="topbar-nav-item" role="menuitem" aria-label="Session Log">
+    <button class="sidebar-nav-item" role="menuitem" aria-label="Session Log">
       <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
       <span>Session Log</span>
     </button>
-    <button class="topbar-nav-item" role="menuitem" aria-label="My Coaching">
+    <button class="sidebar-nav-item" role="menuitem" aria-label="My Coaching">
       <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m18.7 8-5.1 5.2-2.8-2.7L7 14.3"/></svg>
       <span>My Coaching</span>
     </button>
-    <button class="topbar-nav-item" role="menuitem" aria-label="AI Chat">
+    <button class="sidebar-nav-item" role="menuitem" aria-label="AI Chat">
       <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
       <span>AI Chat</span>
     </button>
-    <button class="topbar-nav-item" role="menuitem" aria-label="Resources">
+    <button class="sidebar-nav-item" role="menuitem" aria-label="Resources">
       <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
       <span>Resources</span>
     </button>
   </div>
-  <div class="topbar-right">
-    <button class="topbar-search-btn" title="Search">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+
+  <div class="sidebar-bottom" role="group" aria-label="Utility actions">
+    <button class="sidebar-bottom-btn" title="Search" aria-label="Search">
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <span>Search</span>
     </button>
-    <button class="topbar-notif-btn" title="Notifications">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+    <button class="sidebar-bottom-btn" title="Notifications" aria-label="Notifications">
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <span>Notifications</span>
     </button>
-    <div class="topbar-user">
-      <div class="avatar">SM</div>
-      <div>
+    <div class="sidebar-user" role="group" aria-label="User profile" tabindex="0">
+      <div class="avatar" aria-hidden="true">SM</div>
+      <div class="user-info">
         <div class="user-name">Sarah Mitchell</div>
         <div class="user-role">Coach</div>
       </div>
     </div>
   </div>
 </nav>
+
+<!-- ═══ MAIN CONTENT AREA ═══ -->
+<div class="main-content-area">
 
 <!-- ═══ CLIENT INFO BAR ═══ -->
 <div class="client-bar">
@@ -1498,37 +1787,211 @@ body {
 
 <!-- ═══ TAB: RELATIONSHIP ═══ -->
 <div class="tab-content" data-panel="relationship" role="tabpanel" id="panel-relationship" aria-labelledby="tab-relationship">
-  <div class="placeholder-content">
-    <div class="ph-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></div>
-    <h3>Relationship</h3>
-    <p>Client relationship health, engagement patterns, communication history, and trust metrics will appear here.</p>
+  <div class="rel-scroll" id="relScroll">
+
+    <!-- Breadcrumb -->
+    <div class="rel-breadcrumb" id="relBreadcrumb">
+      <a onclick="showClientHub()">Company Hub</a> &rsaquo; <span id="relBcCompany">Meridian Group</span> &rsaquo; <span id="relBcName">Sarah Mitchell</span>
+    </div>
+
+    <!-- Client Header -->
+    <div class="rel-header" id="relHeader">
+      <!-- Rendered by JS -->
+    </div>
+
+    <!-- Sub-tabs: Overview | Memories -->
+    <div class="rel-subtabs">
+      <button class="rel-subtab active" onclick="switchRelSubtab('overview')">Overview</button>
+      <button class="rel-subtab" onclick="switchRelSubtab('memories')">Memories</button>
+    </div>
+
+    <!-- ── Overview Sub-panel ── -->
+    <div class="rel-subpanel active" id="relOverviewPanel">
+      <div class="rel-columns">
+
+        <!-- Left Column -->
+        <div>
+          <!-- Executive Summary -->
+          <div class="rel-card">
+            <div class="rel-card-header">
+              <h3>Executive Summary <span class="ai-tag">AI-generated</span></h3>
+              <button class="rel-action">Regenerate</button>
+            </div>
+            <div id="relExecSummary">
+              <!-- Rendered by JS -->
+            </div>
+          </div>
+
+          <!-- Impact Statement -->
+          <div class="rel-card">
+            <div class="rel-card-header">
+              <h3>Impact Statement <span class="ai-tag">AI-suggested</span></h3>
+              <button class="rel-action" style="font-size:14px;">&#9998;</button>
+            </div>
+            <div id="relImpact"></div>
+          </div>
+
+          <!-- Growth Opportunities -->
+          <div class="rel-card">
+            <div class="rel-card-header">
+              <h3>Growth Opportunities</h3>
+            </div>
+            <div id="relGrowth"></div>
+          </div>
+
+          <!-- My Notes on This Relationship -->
+          <div class="rel-card">
+            <div class="rel-card-header">
+              <h3>My Notes on This Relationship</h3>
+            </div>
+            <textarea class="rel-notes-area" id="relNotesArea" placeholder="Write your personal notes about this coaching relationship..."></textarea>
+            <div class="rel-notes-hint">Auto-saves when you click away</div>
+          </div>
+        </div>
+
+        <!-- Right Column -->
+        <div>
+          <!-- Relationship Health -->
+          <div class="rel-card">
+            <div class="rel-card-header">
+              <h3>Relationship Health</h3>
+            </div>
+            <div id="relHealthContent"></div>
+          </div>
+
+          <!-- Personal Moments -->
+          <div class="rel-card">
+            <div class="rel-card-header">
+              <h3>Personal Moments</h3>
+            </div>
+            <div id="relMoments"></div>
+          </div>
+
+          <!-- Communication Preferences -->
+          <div class="rel-card">
+            <div class="rel-card-header">
+              <h3>Communication Preferences</h3>
+              <button class="rel-action">Add Context</button>
+            </div>
+            <div id="relCommPrefs"></div>
+          </div>
+
+          <!-- Business & Performance Context -->
+          <div class="rel-card">
+            <div class="rel-card-header">
+              <h3>Business &amp; Performance Context</h3>
+            </div>
+            <div id="relBizContext"></div>
+          </div>
+
+          <!-- Top Coaching Themes -->
+          <div class="rel-card">
+            <div class="rel-card-header">
+              <h3>&#9733; Top Coaching Themes</h3>
+            </div>
+            <div id="relThemes"></div>
+          </div>
+
+          <!-- Recent Wins -->
+          <div class="rel-card">
+            <div class="rel-card-header">
+              <h3>&#10024; Recent Wins</h3>
+            </div>
+            <div id="relWins"></div>
+          </div>
+
+          <!-- Watch Items -->
+          <div class="rel-card">
+            <div class="rel-card-header">
+              <h3>&#9888; Watch Items</h3>
+            </div>
+            <div id="relWatch"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Memories Sub-panel ── -->
+    <div class="rel-subpanel" id="relMemoriesPanel">
+      <div class="rel-card" style="border-left:3px solid var(--color-brand);margin-bottom:20px;">
+        <h3 style="font-size:16px;font-weight:700;color:var(--color-text);margin-bottom:4px;">What CoachIQ knows about <span id="relMemName">Sarah</span></h3>
+        <p style="font-size:13px;color:var(--color-text-muted);margin:0;">A synthesized profile drawn from sessions, documents, and your direct input.</p>
+      </div>
+      <div class="rel-memories-layout">
+        <div id="relMemoriesContent">
+          <!-- Rendered by JS -->
+        </div>
+        <div>
+          <div class="rel-memory-edit">
+            <h3>Edit Memories</h3>
+            <p style="font-size:12px;color:var(--color-text-muted);margin-bottom:8px;">Tell AI what you want to edit in the memory file.</p>
+            <textarea class="rel-memory-input" placeholder='e.g. "Sarah mentioned she&#39;s considering an MBA program"'></textarea>
+            <h3 style="font-size:13px;margin-top:16px;">Past Edits</h3>
+            <p style="font-size:11px;color:var(--color-text-muted);margin-bottom:8px;">Here are the last memory edits you performed.</p>
+            <div id="relPastEdits"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
 <!-- ═══ TAB: COMMITMENTS ═══ -->
 <div class="tab-content" data-panel="commitments" role="tabpanel" id="panel-commitments" aria-labelledby="tab-commitments">
-  <div class="placeholder-content">
-    <div class="ph-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
-    <h3>Commitments</h3>
-    <p>Coach and client commitments, action items, due dates, and completion tracking will appear here.</p>
+  <div class="commit-scroll">
+    <div class="commit-header">
+      <h2>Commitments</h2>
+      <button class="ov-btn ov-btn-primary" style="padding:8px 16px;">+ Add Commitment</button>
+    </div>
+    <div class="commit-filters">
+      <button class="commit-filter active">All</button>
+      <button class="commit-filter">Coach</button>
+      <button class="commit-filter">Client</button>
+      <button class="commit-filter">Overdue</button>
+      <button class="commit-filter">Due This Week</button>
+      <button class="commit-filter">Completed</button>
+    </div>
+    <div id="commitTabList">
+      <!-- Rendered by JS -->
+    </div>
   </div>
 </div>
 
 <!-- ═══ TAB: GOAL TRACKER ═══ -->
 <div class="tab-content" data-panel="goals" role="tabpanel" id="panel-goals" aria-labelledby="tab-goals">
-  <div class="placeholder-content">
-    <div class="ph-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
-    <h3>Goal Tracker</h3>
-    <p>Client goals, milestones, progress tracking, and objective alignment will appear here.</p>
+  <div class="goals-scroll">
+    <div class="commit-header">
+      <h2>Goal Tracker</h2>
+      <button class="ov-btn ov-btn-primary" style="padding:8px 16px;">+ Add Goal</button>
+    </div>
+    <div id="goalsTabList">
+      <!-- Rendered by JS -->
+    </div>
   </div>
 </div>
 
 <!-- ═══ TAB: NOTES ═══ -->
 <div class="tab-content" data-panel="notes" role="tabpanel" id="panel-notes" aria-labelledby="tab-notes">
-  <div class="placeholder-content">
-    <div class="ph-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
-    <h3>Notes</h3>
-    <p>Session notes, coaching observations, and client reflections will appear here.</p>
+  <div class="notes-scroll">
+    <div class="commit-header">
+      <h2>Session Notes</h2>
+      <button class="ov-btn ov-btn-primary" style="padding:8px 16px;">+ New Note</button>
+    </div>
+    <!-- Current Note Editor -->
+    <div class="notes-editor">
+      <div class="notes-editor-toolbar">
+        <button class="notes-editor-btn" title="Bold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/></svg></button>
+        <button class="notes-editor-btn" title="Italic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="4" x2="10" y2="4"/><line x1="14" y1="20" x2="5" y2="20"/><line x1="15" y1="4" x2="9" y2="20"/></svg></button>
+        <button class="notes-editor-btn" title="List"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></button>
+        <button class="notes-editor-btn" title="Link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button>
+      </div>
+      <textarea class="notes-textarea" placeholder="Start writing your session notes here..."></textarea>
+    </div>
+    <!-- Past Notes -->
+    <div class="notes-list" id="notesTabList">
+      <!-- Rendered by JS -->
+    </div>
   </div>
 </div>
 
@@ -1720,101 +2183,88 @@ body {
   <div class="ch-header">
     <div class="ch-header-left">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-      <h1>Client Hub</h1>
+      <div>
+        <h1>Company Hub</h1>
+        <span style="font-size:12px;color:var(--color-text-muted);">Last updated 3:27:00 AM</span>
+      </div>
     </div>
-    <button class="ch-refresh-btn" onclick="renderClientHub()" aria-label="Refresh data">
+    <button class="ch-refresh-btn" onclick="renderClientHub();" aria-label="Refresh data">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
       Refresh
     </button>
   </div>
 
-  <!-- KPI Cards -->
-  <div class="ch-kpi-row">
-    <div class="ch-kpi-card ch-kpi-critical">
-      <div class="ch-kpi-header"><span class="ch-kpi-label">High Risk Clients</span><span class="ch-kpi-badge ch-badge-critical">Critical</span></div>
-      <div class="ch-kpi-value">5 <span class="ch-kpi-denom">/12 clients</span></div>
-      <div class="ch-kpi-footer"><span class="ch-kpi-change ch-change-up">+2 this month</span><span class="ch-kpi-arrow">&#8599;</span></div>
+  <!-- KPI Cards (Updated from Figma) -->
+  <div class="hub-kpi-row">
+    <div class="hub-kpi critical">
+      <div class="hub-kpi-top"><span class="hub-kpi-label">Portfolio Health</span><span class="hub-kpi-status critical">Critical</span></div>
+      <div class="hub-kpi-value">3 <small>/6 healthy</small></div>
+      <div class="hub-kpi-change positive">+1 this month</div>
+      <div class="hub-kpi-breakdown">
+        <div class="hub-kpi-breakdown-item"><span class="hub-kpi-breakdown-label"><span class="hub-kpi-breakdown-dot" style="background:#4CAF50;"></span> Healthy</span><span class="hub-kpi-breakdown-val">3 companies</span></div>
+        <div class="hub-kpi-breakdown-item"><span class="hub-kpi-breakdown-label"><span class="hub-kpi-breakdown-dot" style="background:#FF9800;"></span> Watch</span><span class="hub-kpi-breakdown-val">2 companies</span></div>
+        <div class="hub-kpi-breakdown-item"><span class="hub-kpi-breakdown-label"><span class="hub-kpi-breakdown-dot" style="background:#E53935;"></span> At Risk</span><span class="hub-kpi-breakdown-val">1 companies</span></div>
+      </div>
     </div>
-    <div class="ch-kpi-card ch-kpi-healthy">
-      <div class="ch-kpi-header"><span class="ch-kpi-label">Health Score</span><span class="ch-kpi-badge ch-badge-healthy">Healthy</span></div>
-      <div class="ch-kpi-value">9.1 <span class="ch-kpi-denom">/10</span></div>
-      <div class="ch-kpi-footer"><span class="ch-kpi-change ch-change-down">-2 this month</span><span class="ch-kpi-arrow">&#8599;</span></div>
+    <div class="hub-kpi critical">
+      <div class="hub-kpi-top"><span class="hub-kpi-label">Needs Action</span><span class="hub-kpi-status critical">Critical</span></div>
+      <div class="hub-kpi-value">16 <small>total flags</small></div>
+      <div class="hub-kpi-change negative">+12 this month</div>
+      <div class="hub-kpi-breakdown">
+        <div class="hub-kpi-breakdown-item"><span class="hub-kpi-breakdown-label">Overdue Commitments</span><span class="hub-kpi-breakdown-val">12</span></div>
+        <div class="hub-kpi-breakdown-item"><span class="hub-kpi-breakdown-label">Declining Health</span><span class="hub-kpi-breakdown-val">1</span></div>
+        <div class="hub-kpi-breakdown-item"><span class="hub-kpi-breakdown-label">No Session 30+ Days</span><span class="hub-kpi-breakdown-val">3</span></div>
+      </div>
     </div>
-    <div class="ch-kpi-card ch-kpi-impact">
-      <div class="ch-kpi-header"><span class="ch-kpi-label">Impact Score</span><span class="ch-kpi-badge ch-badge-healthy">Healthy</span></div>
-      <div class="ch-kpi-value">8.4 <span class="ch-kpi-denom">/10</span></div>
-      <div class="ch-kpi-footer"><span class="ch-kpi-change ch-change-up">&uarr; 3% this month</span><span class="ch-kpi-arrow">&#8599;</span></div>
+    <div class="hub-kpi on-track">
+      <div class="hub-kpi-top"><span class="hub-kpi-label">Sessions This Month</span><span class="hub-kpi-status on-track">On Track</span></div>
+      <div class="hub-kpi-value">24 <small>this month</small></div>
+      <div class="hub-kpi-change positive">+3 vs last month</div>
+      <div class="hub-kpi-breakdown">
+        <div class="hub-kpi-breakdown-item"><span class="hub-kpi-breakdown-label">Completed</span><span class="hub-kpi-breakdown-val">18 sessions</span></div>
+        <div class="hub-kpi-breakdown-item"><span class="hub-kpi-breakdown-label">Scheduled</span><span class="hub-kpi-breakdown-val">6 upcoming</span></div>
+        <div class="hub-kpi-breakdown-item"><span class="hub-kpi-breakdown-label">Cancelled</span><span class="hub-kpi-breakdown-val">0 sessions</span></div>
+      </div>
     </div>
-    <div class="ch-kpi-card ch-kpi-session">
-      <div class="ch-kpi-header"><span class="ch-kpi-label">Recent Session</span><span class="ch-kpi-badge ch-badge-warning">Warning</span></div>
-      <div class="ch-kpi-value">14 <span class="ch-kpi-denom">this month</span></div>
-      <div class="ch-kpi-footer"><span class="ch-kpi-change ch-change-up">+ 3 vs last month</span><span class="ch-kpi-arrow">&#8599;</span></div>
+    <div class="hub-kpi warning">
+      <div class="hub-kpi-top"><span class="hub-kpi-label">Commitments Due</span><span class="hub-kpi-status warning">Warning</span></div>
+      <div class="hub-kpi-value">8 <small>due this week</small></div>
+      <div class="hub-kpi-change negative">+3 vs last month</div>
+      <div class="hub-kpi-breakdown">
+        <div class="hub-kpi-breakdown-item"><span class="hub-kpi-breakdown-label">Overdue</span><span class="hub-kpi-breakdown-val">12</span></div>
+        <div class="hub-kpi-breakdown-item"><span class="hub-kpi-breakdown-label">Due This Week</span><span class="hub-kpi-breakdown-val">8</span></div>
+        <div class="hub-kpi-breakdown-item"><span class="hub-kpi-breakdown-label">Completed</span><span class="hub-kpi-breakdown-val">14 this month</span></div>
+      </div>
     </div>
   </div>
 
-  <!-- Secondary Metrics -->
-  <div class="ch-metrics-row">
-    <div class="ch-metric-card">
-      <div class="ch-metric-title">Session Metrics</div>
-      <div class="ch-metric-items">
-        <div class="ch-metric-line"><span>Active Clients</span><span class="ch-metric-val">12 clients <span class="ch-arrow-link">&#8599;</span></span></div>
-        <div class="ch-metric-line"><span>Avg Tenure</span><span class="ch-metric-val">18 mo <span class="ch-trend-up">&#8593;</span></span></div>
-        <div class="ch-metric-line"><span>Longest Client</span><span class="ch-metric-val">3y 2mo <span class="ch-trend-flat">&mdash;</span></span></div>
-      </div>
-    </div>
-    <div class="ch-metric-card">
-      <div class="ch-metric-title">3C's Scoring</div>
-      <div class="ch-metric-items">
-        <div class="ch-metric-line"><span><span class="ch-dot ch-dot-green"></span>Confidence</span><span class="ch-metric-val">9.2 / 10 <span class="ch-arrow-link">&#8599;</span></span></div>
-        <div class="ch-metric-line"><span><span class="ch-dot ch-dot-red"></span>Charisma</span><span class="ch-metric-val">.53 / 10 <span class="ch-arrow-link">&#8599;</span></span></div>
-        <div class="ch-metric-line"><span><span class="ch-dot ch-dot-blue"></span>Change</span><span class="ch-metric-val">8.3 / 10 <span class="ch-arrow-link">&#8599;</span></span></div>
-      </div>
-    </div>
-    <div class="ch-metric-card">
-      <div class="ch-metric-title">Wins Logged</div>
-      <div class="ch-metric-items" style="justify-content:center;">
-        <div class="ch-wins-value"><span class="ch-badge-healthy" style="margin-right:8px;padding:2px 8px;border-radius:10px;font-size:10px;">Healthy</span></div>
-        <div class="ch-big-number">14 <span class="ch-big-sub">wins logged</span></div>
-        <div class="ch-kpi-change ch-change-up" style="font-size:12px;">+ 5 this month</div>
-      </div>
-    </div>
-    <div class="ch-metric-card">
-      <div class="ch-metric-title">Session Metrics</div>
-      <div class="ch-metric-items">
-        <div class="ch-metric-line"><span><span class="ch-dot ch-dot-green"></span>Avg. Health Score</span><span class="ch-metric-val">8.4 / 10</span></div>
-        <div class="ch-metric-line"><span><span class="ch-dot ch-dot-red"></span>~Session Per Month</span><span class="ch-metric-val">3.9 / month <span class="ch-trend-up">&#8593;</span></span></div>
-        <div class="ch-metric-line"><span><span class="ch-dot ch-dot-blue"></span>~Session Gap</span><span class="ch-metric-val">15.3 days <span class="ch-trend-up">&#8593;</span></span></div>
-      </div>
-    </div>
+  <!-- Filter Pills -->
+  <div class="commit-filters" style="margin-bottom:16px;">
+    <button class="commit-filter active">All</button>
+    <button class="commit-filter">At Risk</button>
+    <button class="commit-filter">Upcoming Session</button>
+    <button class="commit-filter">Overdue Commitments</button>
   </div>
 
   <!-- Client Table -->
   <div class="ch-table-header">
-    <span class="ch-table-count">25 Total Clients</span>
-    <div class="ch-table-controls">
-      <div class="docs-search-wrapper" style="min-width:200px;">
-        <svg class="search-icn" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-        <input type="text" placeholder="Search clients..." oninput="searchClients(this.value)" aria-label="Search clients">
-      </div>
-      <button class="ch-columns-btn" aria-label="Configure columns">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-        Columns
-      </button>
+    <div class="docs-search-wrapper" style="min-width:240px;">
+      <svg class="search-icn" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" placeholder="Search companies or coaches..." oninput="searchClients(this.value)" aria-label="Search companies">
     </div>
   </div>
   <div class="ch-table-wrapper" role="region" aria-label="Clients table" tabindex="0">
     <table class="ch-table" role="grid">
       <thead><tr>
         <th style="width:32px;"><input type="checkbox" aria-label="Select all clients"></th>
-        <th>Client Name</th>
-        <th>Company</th>
-        <th>Health Score</th>
-        <th>Session Count</th>
-        <th>Churn Risk</th>
-        <th>Last Touch</th>
-        <th>Impact Score</th>
-        <th>Cadence</th>
-        <th>Action</th>
+        <th>Company &#9650;</th>
+        <th>Health ↕</th>
+        <th>Coaches</th>
+        <th>Last Session</th>
+        <th>Next Session</th>
+        <th>Commitments</th>
+        <th>Status</th>
+        <th>Actions</th>
       </tr></thead>
       <tbody id="clientHubBody"></tbody>
     </table>
@@ -1840,6 +2290,8 @@ body {
     </div>
   </div>
 </div>
+
+</div><!-- /.main-content-area -->
 
 <script>
 // ═══ STATE ═══
@@ -2061,6 +2513,309 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&document.ge
 // Load more docs on Enter/Space
 var lmBtn=document.getElementById('docsLoadMore');
 if(lmBtn)lmBtn.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();loadMoreDocs();}});
+
+// ═══ RELATIONSHIP TAB DATA & RENDERING ═══
+var clientRelData={
+  'Sarah Chen':{
+    role:'Chief Operating Officer',company:'Northstar Capital',since:'Since September 2024',
+    badges:['Active','Bi-weekly'],
+    stats:{tti:79,health:85,sessions:42,commits:55},
+    execSummary:'<p>Sarah Chen is the Chief Operating Officer at Northstar Capital, now in month 18 of your coaching engagement. The coaching relationship began with a focus on helping Sarah transition from an operational executor to a strategic enterprise leader — a shift driven by her promotion to COO in 2022 and the growing complexity of her role overseeing $240M in revenue and 1,200 employees.</p><p>Over the course of 32 sessions, Sarah has demonstrated meaningful progress in several key areas. Her initial resistance to stepping back from day-to-day operations has transformed into genuine curiosity about strategic leadership. A breakthrough moment came in January 2026 when she shifted from defensive to curious when discussing her board communication style — the first time she acknowledged the tactical-vs-strategic gap without reframing it as others\' expectations.</p><p><em>Behavioral patterns remain consistent with her high-D DISC profile: under pressure, she defaults to operational control, diving into details rather than delegating. However, the frequency of these defaults has decreased noticeably since Session #20, and she catches herself more quickly.</em></p><p>Current challenges include navigating the VP of Sales departure (creating a leadership gap she feels compelled to fill), managing the Chicago office consolidation timeline (Q3 2026), and maintaining strategic altitude during Q1 board pressure. The ERP migration (Q2 2026) adds operational complexity. Her next board presentation on April 15 will be an important test of her strategic narrative capabilities.</p>',
+    execMeta:'Generated from 32 sessions, 47 commitments, 12 documents',
+    impact:'Support Sarah\'s transition from operational executor to strategic enterprise leader',
+    impactDate:'Last Update: March 4th, 2026',
+    growth:[
+      {text:'Tendency to rescue direct reports instead of coaching them through challenges. This pattern surfaces most when timelines are tight and she defaults to "I\'ll just do it myself."',observed:'Observed: Sessions #28-31'},
+      {text:'Opportunity to shift from leading with operational metrics to strategic narrative in board contexts. She has the strategic thinking — the gap is in framing and storytelling.',observed:'Observed: Sessions #25-31'},
+      {text:'Building comfort with ambiguity in decision-making. Sarah tends to over-prepare as a way to manage uncertainty rather than sitting with incomplete information.',observed:'Observed: Sessions #20-27'}
+    ],
+    healthScore:84,healthTrend:'+6',healthTrendDir:'up',
+    healthDetails:'32 sessions · 18 months · 3 open commitments (all on track)<br>Next: March 21',
+    moments:[
+      {date:'November 12',text:'Sarah\'s Birthday',source:'Turns 44',extra:'From: Session #3'},
+      {date:'April 3',text:'Work Anniversary at Meridian',source:'6 years',extra:'From: Engagement kickoff'},
+      {date:'February 2026',text:'Completed Leadership 360 Review',source:'',extra:'From: Session #28'}
+    ],
+    commPrefs:[
+      'Be direct and results-oriented. Sarah appreciates efficiency and doesn\'t need excessive context before getting to the point.',
+      'Frame feedback in terms of outcomes and impact. She responds well to data-driven observations rather than abstract concepts.',
+      'Give her space to process decisions independently. She\'s more comfortable thinking through options alone before discussing.',
+      'Acknowledge her strategic thinking explicitly. Recognition of her analytical capabilities builds trust quickly.'
+    ],
+    bizContext:'<p>Chief Operating Officer overseeing $240M revenue and 1,200 employees. Manages Operations, IT, and Facilities divisions. Reports to CEO James Chen. Key peer: CFO David Martinez. Key initiatives: ERP migration Q2 2026, Chicago office consolidation Q3 2026. Next board presentation: April 15, 2026.</p><p class="rel-card-meta">From: Engagement kickoff, Sessions #1-31, uploaded documents</p>',
+    themes:['Delegation & trust-building with direct reports','Strategic leadership vs. operational management','Executive presence & board communication'],
+    wins:['Successfully delegated Q1 ops review to VP team','Board presentation received strong positive feedback','Improved 1:1 cadence with all direct reports'],
+    watchItems:['Q1 board pressure may trigger control tendencies','Chicago office transition adding emotional stress','VP of Sales departure creating leadership gap'],
+    memories:{
+      professional:'Sarah Chen joined Meridian Group in 2020 as VP of Operations and was promoted to Chief Operating Officer in 2022. She oversees a $240M revenue operation with 1,200 employees across Operations, IT, and Facilities. She reports directly to CEO James Chen and works closely with CFO David Martinez. Prior to Meridian, Sarah spent 12 years at Deloitte in operations consulting, rising to Senior Manager. She holds an MBA from Northwestern Kellogg and a BS in Industrial Engineering from Purdue. Her career has been defined by a methodical, execution-focused approach — she is someone who builds systems and processes that scale.',
+      behavioral:'Sarah exhibits a high-D, moderate-I DISC profile. Under pressure, she defaults to operational control — diving into details rather than delegating. This pattern is most pronounced during board preparation and quarterly reviews. Over the past 18 months, she has become increasingly aware of this tendency and has made measurable progress in stepping back. She shifted from defensive to curious about her board communication style in January 2026, marking a significant breakthrough. She consistently leads with operational metrics when strategic narrative is expected, particularly in board-facing contexts. Stress manifests as over-preparation rather than avoidance.',
+      communication:'Sarah is direct, results-oriented, and appreciates efficiency. She responds best when feedback is framed in terms of outcomes and impact, with data-driven observations rather than abstract concepts. She prefers to process decisions independently before discussing them. She dislikes being asked "how are you feeling" as a session opener — she prefers jumping directly into the topic. Recognition of her analytical capabilities and strategic thinking builds trust quickly. She is a skeptic of process for process\'s sake and values clarity above all.',
+      personal:'Sarah is married to Michael, an architect. They have two children: Emma (14), who is starting to look at high schools, and Jake (11). The family enjoys travel — Sarah mentioned wanting to take a long weekend in Italy for her birthday this year. Emma\'s transition to high school is taking emotional bandwidth but also giving Sarah perspective on what legacy means beyond work. Michael has been supportive of her coaching journey and has noticed positive changes in how she manages stress at home.',
+      preferences:'Sarah strongly prefers morning sessions before 10am when she feels most energized and open. She values punctuality and structured agendas. She appreciates when the coach challenges her thinking with data and logic rather than emotional framing. She prefers to receive session summaries via email within 24 hours. She drinks black coffee — no cream, no sugar. She cycles to work when weather permits and often uses that time for reflection.'
+    },
+    pastEdits:[
+      {who:'You',time:'March 14, 2026 · 3:42 PM',text:'Sarah mentioned she\'s thinking about spo...'},
+      {who:'CoachIQ',time:'March 14, 2026 · 3:42 PM',text:'Got it. I\'ve added this to Sarah\'s Professiona...'}
+    ]
+  }
+};
+// Default relationship data
+var defaultRelData={
+  role:'Executive',company:'Company',since:'Since 2024',badges:['Active'],
+  stats:{tti:75,health:80,sessions:20,commits:30},
+  execSummary:'<p>Relationship data is being compiled from session transcripts, documents, and coaching notes. A comprehensive executive summary will be generated once sufficient data points are available.</p>',
+  execMeta:'Generating from available sessions and documents',
+  impact:'Coaching engagement focused on professional development and leadership growth.',
+  impactDate:'',
+  growth:[{text:'Growth opportunities will be identified as more session data is analyzed.',observed:''}],
+  healthScore:75,healthTrend:'+0',healthTrendDir:'flat',
+  healthDetails:'Active coaching engagement',
+  moments:[],commPrefs:['Communication preferences will be learned over time.'],
+  bizContext:'<p>Business context will be populated from session data and uploaded documents.</p>',
+  themes:['Leadership development','Professional growth'],
+  wins:['Engagement initiated'],watchItems:['No current watch items'],
+  memories:{professional:'Professional background will be populated from intake documents and sessions.',behavioral:'Behavioral patterns will be identified over time.',communication:'Communication style preferences will be learned through interaction.',personal:'Personal details will be gathered as the coaching relationship develops.',preferences:'Session preferences will be noted over time.'},
+  pastEdits:[]
+};
+
+function switchRelSubtab(which){
+  document.querySelectorAll('.rel-subtab').forEach(function(b){b.classList.remove('active');});
+  document.querySelectorAll('.rel-subpanel').forEach(function(p){p.classList.remove('active');});
+  if(which==='memories'){
+    document.querySelectorAll('.rel-subtab')[1].classList.add('active');
+    document.getElementById('relMemoriesPanel').classList.add('active');
+  } else {
+    document.querySelectorAll('.rel-subtab')[0].classList.add('active');
+    document.getElementById('relOverviewPanel').classList.add('active');
+  }
+}
+
+function renderRelationship(idx){
+  var c=clientsData[idx];
+  var rd=clientRelData[c.name]||defaultRelData;
+
+  // Breadcrumb
+  document.getElementById('relBcCompany').textContent=rd.company||c.company;
+  document.getElementById('relBcName').textContent=c.name;
+
+  // Header
+  var hHtml='<div class="rel-avatar" style="background:'+c.color+'">'+c.initials+'</div>';
+  hHtml+='<div class="rel-header-info"><div class="rel-header-name">'+c.name+'</div>';
+  hHtml+='<div class="rel-header-role">'+rd.role+' · '+(rd.company||c.company)+' · '+rd.since+'</div>';
+  hHtml+='<div class="rel-header-badges">';
+  rd.badges.forEach(function(b){
+    var cls=b==='Active'?'active':b==='At Risk'?'at-risk':'biweekly';
+    hHtml+='<span class="rel-badge '+cls+'">'+b+'</span>';
+  });
+  hHtml+='</div></div>';
+  hHtml+='<div class="rel-header-stats">';
+  hHtml+='<div class="rel-stat"><div class="rel-stat-val" style="color:var(--color-brand);">'+rd.stats.tti+'</div><div class="rel-stat-label">TTI Report</div></div>';
+  hHtml+='<div class="rel-stat"><div class="rel-stat-val">'+rd.stats.health+'</div><div class="rel-stat-label">Health</div></div>';
+  hHtml+='<div class="rel-stat"><div class="rel-stat-val">'+rd.stats.sessions+'</div><div class="rel-stat-label">Sessions</div></div>';
+  hHtml+='<div class="rel-stat"><div class="rel-stat-val">'+rd.stats.commits+'</div><div class="rel-stat-label">Commits</div></div>';
+  hHtml+='</div>';
+  hHtml+='<div class="rel-header-actions"><button class="ov-btn" style="font-size:12px;">Full Report</button><button class="ov-btn" style="font-size:12px;">Upload</button></div>';
+  document.getElementById('relHeader').innerHTML=hHtml;
+
+  // Executive Summary
+  document.getElementById('relExecSummary').innerHTML=rd.execSummary+'<div class="rel-card-meta">'+rd.execMeta+'</div>';
+
+  // Impact Statement
+  var impHtml='<div style="padding:12px 16px;background:var(--color-brand-soft);border-radius:var(--radius-sm);border-left:3px solid var(--color-brand);margin-bottom:8px;">';
+  impHtml+='<div style="font-size:10px;font-weight:700;color:var(--color-brand);text-transform:uppercase;margin-bottom:4px;">Personal North Star <span class="ai-tag">AI-suggested</span></div>';
+  impHtml+='<p style="font-size:14px;font-weight:600;color:var(--color-text);margin:0;">'+rd.impact+'</p>';
+  impHtml+='</div>';
+  if(rd.impactDate) impHtml+='<div style="font-size:11px;color:var(--color-text-muted);">'+rd.impactDate+'</div>';
+  document.getElementById('relImpact').innerHTML=impHtml;
+
+  // Growth Opportunities
+  var gHtml='';
+  rd.growth.forEach(function(g){
+    gHtml+='<div class="rel-growth"><p>'+g.text+'</p>';
+    if(g.observed) gHtml+='<div class="observed">'+g.observed+'</div>';
+    gHtml+='</div>';
+  });
+  document.getElementById('relGrowth').innerHTML=gHtml;
+
+  // Relationship Health
+  var rhHtml='<div class="rel-health"><div class="rel-health-score">'+rd.healthScore+'</div>';
+  rhHtml+='<div><div class="rel-health-trend '+(rd.healthTrendDir==='up'?'up':'down')+'">↗ '+rd.healthTrend+'</div>';
+  rhHtml+='<div class="rel-health-details">'+rd.healthDetails+'</div>';
+  rhHtml+='<div class="rel-health-link">How is this calculated?</div></div></div>';
+  document.getElementById('relHealthContent').innerHTML=rhHtml;
+
+  // Personal Moments
+  var mHtml='';
+  if(rd.moments.length){
+    rd.moments.forEach(function(m){
+      mHtml+='<div class="rel-moment"><div class="rel-moment-date">'+m.date+'</div><div><div class="rel-moment-text">'+m.text+'</div>';
+      if(m.source) mHtml+='<div class="rel-moment-source">'+m.source+'</div>';
+      if(m.extra) mHtml+='<div class="rel-moment-source">'+m.extra+'</div>';
+      mHtml+='</div></div>';
+    });
+    mHtml+='<div class="rel-moment-add">+ Add moment</div>';
+  } else {
+    mHtml='<p style="font-size:13px;color:var(--color-text-muted);">No personal moments recorded yet.</p><div class="rel-moment-add">+ Add moment</div>';
+  }
+  document.getElementById('relMoments').innerHTML=mHtml;
+
+  // Communication Preferences
+  var cpHtml='';
+  rd.commPrefs.forEach(function(p){cpHtml+='<div class="rel-pref">'+p+'</div>';});
+  cpHtml+='<div class="rel-card-meta"><span class="ai-tag">AI-suggested</span> Last updated March 10, 2026</div>';
+  document.getElementById('relCommPrefs').innerHTML=cpHtml;
+
+  // Business Context
+  document.getElementById('relBizContext').innerHTML=rd.bizContext;
+
+  // Themes
+  var thHtml='';
+  rd.themes.forEach(function(t){thHtml+='<div class="rel-list-item"><span class="rel-list-bullet theme">★</span>'+t+'</div>';});
+  document.getElementById('relThemes').innerHTML=thHtml;
+
+  // Wins
+  var wHtml='';
+  rd.wins.forEach(function(w){wHtml+='<div class="rel-list-item"><span class="rel-list-bullet win">✦</span>'+w+'</div>';});
+  document.getElementById('relWins').innerHTML=wHtml;
+
+  // Watch Items
+  var waHtml='';
+  rd.watchItems.forEach(function(w){waHtml+='<div class="rel-list-item"><span class="rel-list-bullet watch">⚠</span>'+w+'</div>';});
+  document.getElementById('relWatch').innerHTML=waHtml;
+
+  // Memories
+  document.getElementById('relMemName').textContent=c.name.split(' ')[0];
+  var memHtml='';
+  var sections=[
+    {key:'professional',title:'Professional Background'},
+    {key:'behavioral',title:'Behavioral Patterns'},
+    {key:'communication',title:'Communication Style'},
+    {key:'personal',title:'Personal Life'},
+    {key:'preferences',title:'Preferences'}
+  ];
+  sections.forEach(function(s){
+    memHtml+='<div class="rel-memory-section"><h4>'+s.title+'</h4><p>'+(rd.memories[s.key]||'')+'</p></div>';
+  });
+  document.getElementById('relMemoriesContent').innerHTML=memHtml;
+
+  // Past Edits
+  var peHtml='';
+  if(rd.pastEdits&&rd.pastEdits.length){
+    rd.pastEdits.forEach(function(e){
+      var avatarBg=e.who==='You'?'var(--color-brand)':'#E65100';
+      var avatarText=e.who==='You'?'Y':'CQ';
+      peHtml+='<div class="rel-past-edit"><div class="rel-past-edit-avatar" style="background:'+avatarBg+';color:#fff;">'+avatarText+'</div><div class="rel-past-edit-content"><div class="rel-past-edit-meta"><strong>'+e.who+'</strong> '+e.time+'</div><div class="rel-past-edit-text">'+e.text+'</div></div></div>';
+    });
+  } else {
+    peHtml='<p style="font-size:12px;color:var(--color-text-muted);">Here are the last memory edits you performed.</p>';
+  }
+  document.getElementById('relPastEdits').innerHTML=peHtml;
+
+  // Reset to Overview sub-tab
+  switchRelSubtab('overview');
+}
+
+// ═══ COMMITMENTS TAB RENDERING ═══
+function renderCommitmentsTab(idx){
+  var c=clientsData[idx];
+  var ov=clientOverviewData[c.name]||defaultOverviewData;
+  var html='';
+  // Group: Overdue
+  var overdue=ov.commitments?ov.commitments.filter(function(cm){return cm.urgency==='urgent';}):[];
+  if(overdue.length){
+    html+='<div class="commit-group-label">Overdue ('+overdue.length+')</div>';
+    overdue.forEach(function(cm){html+=renderCommitItem(cm);});
+  }
+  // Group: Due This Week
+  var action=ov.commitments?ov.commitments.filter(function(cm){return cm.urgency==='action';}):[];
+  if(action.length){
+    html+='<div class="commit-group-label">Due This Week ('+action.length+')</div>';
+    action.forEach(function(cm){html+=renderCommitItem(cm);});
+  }
+  // Group: AI Suggested
+  var insight=ov.commitments?ov.commitments.filter(function(cm){return cm.urgency==='insight';}):[];
+  if(insight.length){
+    html+='<div class="commit-group-label">AI Suggested ('+insight.length+')</div>';
+    insight.forEach(function(cm){html+=renderCommitItem(cm);});
+  }
+  if(!html) html='<div style="padding:40px;text-align:center;color:var(--color-text-muted);">No commitments for this client.</div>';
+  document.getElementById('commitTabList').innerHTML=html;
+}
+function renderCommitItem(cm){
+  var typeCls=cm.type==='coach'?'coach':'client-badge';
+  var typeLabel=cm.type==='coach'?'COACH':'CLIENT';
+  var h='<div class="ov-commit-item"><div class="ov-commit-check"></div><div class="ov-commit-body"><div class="ov-commit-title">'+cm.title+'</div><div class="ov-commit-meta"><span class="ov-commit-badge company">'+cm.company+'</span><span class="ov-commit-badge '+typeCls+'">'+typeLabel+'</span><span class="ov-commit-due">'+cm.due+'</span></div></div><div class="ov-commit-actions"><span class="ov-commit-urgency '+cm.urgency+'">'+cm.urgency.toUpperCase()+'</span>';
+  if(cm.urgency==='urgent')h+='<button class="ov-session-btn" style="font-size:11px;">Reschedule</button><button class="ov-session-btn" style="font-size:11px;">Snooze</button>';
+  else if(cm.urgency==='action')h+='<button class="ov-session-btn" style="font-size:11px;">Reschedule</button><button class="ov-session-btn" style="font-size:11px;">View</button>';
+  else h+='<button class="ov-session-btn" style="font-size:11px;">Approve</button><button class="ov-session-btn" style="font-size:11px;">Dismiss</button>';
+  h+='</div></div>';
+  return h;
+}
+
+// ═══ GOAL TRACKER TAB RENDERING ═══
+var clientGoalData={
+  'default':[
+    {title:'Develop Strategic Leadership Presence',progress:72,color:'green',milestones:[
+      {text:'Complete executive communication assessment',done:true},
+      {text:'Deliver Q1 board presentation with strategic narrative',done:true},
+      {text:'Conduct 3 leadership roundtables',done:true},
+      {text:'Receive 360 feedback on leadership style',done:false},
+      {text:'Develop personal leadership brand statement',done:false}
+    ]},
+    {title:'Build Delegation & Trust Framework',progress:55,color:'yellow',milestones:[
+      {text:'Map direct report capabilities and development areas',done:true},
+      {text:'Delegate Q1 ops review completely to VP team',done:true},
+      {text:'Implement weekly coaching sessions with 3 direct reports',done:false},
+      {text:'Create decision-rights matrix for team',done:false},
+      {text:'Achieve 80% delegation score on monthly assessment',done:false}
+    ]},
+    {title:'Navigate Organizational Change',progress:30,color:'red',milestones:[
+      {text:'Develop Chicago office consolidation communication plan',done:true},
+      {text:'Align with CEO on VP of Sales replacement strategy',done:false},
+      {text:'Build cross-functional transition team',done:false},
+      {text:'Complete ERP migration leadership readiness assessment',done:false}
+    ]}
+  ]
+};
+function renderGoalsTab(idx){
+  var c=clientsData[idx];
+  var goals=clientGoalData[c.name]||clientGoalData['default'];
+  var html='';
+  goals.forEach(function(g){
+    html+='<div class="goal-card"><div class="goal-card-header"><h3>'+g.title+'</h3><span style="font-size:14px;font-weight:700;color:var(--color-text);">'+g.progress+'%</span></div>';
+    html+='<div class="goal-progress"><div class="goal-progress-bar '+g.color+'" style="width:'+g.progress+'%"></div></div>';
+    html+='<ul class="goal-milestones">';
+    g.milestones.forEach(function(m){
+      html+='<li class="goal-milestone"><span class="goal-milestone-check'+(m.done?' done':'')+'"></span>'+m.text+'</li>';
+    });
+    html+='</ul></div>';
+  });
+  document.getElementById('goalsTabList').innerHTML=html;
+}
+
+// ═══ NOTES TAB RENDERING ═══
+var clientNotesData={
+  'default':[
+    {title:'Session #32 — Strategic Board Presentation Prep',date:'March 14, 2026',preview:'Discussed approach for April 15 board presentation. Sarah is moving away from operational metrics-heavy slides toward strategic narrative. Key insight: she recognized her tendency to over-prepare with data when feeling uncertain about strategic messaging.',tags:['Session','Strategy']},
+    {title:'Session #31 — VP of Sales Departure Impact',date:'March 7, 2026',preview:'Explored Sarah\'s reaction to VP of Sales departure. Initial instinct was to take over sales oversight directly. Coached through delegation options — she identified 3 internal candidates worth developing.',tags:['Session','Leadership']},
+    {title:'Session #30 — Chicago Office Consolidation Planning',date:'February 28, 2026',preview:'Sarah presented her consolidation timeline. Good strategic thinking but noticed stress patterns emerging. Discussed separating emotional response from operational planning.',tags:['Session','Operations']},
+    {title:'Quick Note — Pre-session observation',date:'February 25, 2026',preview:'Sarah sent a thoughtful email reflecting on last session\'s delegation challenge. She\'s starting to self-coach — sign of real progress.',tags:['Observation']},
+    {title:'Session #29 — ERP Migration Leadership',date:'February 21, 2026',preview:'Focused on Sarah\'s role in ERP migration. She tends to get pulled into technical details. Worked on defining her leadership lane vs. operational lane for this project.',tags:['Session','Operations']}
+  ]
+};
+function renderNotesTab(idx){
+  var c=clientsData[idx];
+  var notes=clientNotesData[c.name]||clientNotesData['default'];
+  var html='';
+  notes.forEach(function(n){
+    html+='<div class="note-item"><div class="note-item-header"><div class="note-item-title">'+n.title+'</div><div class="note-item-date">'+n.date+'</div></div>';
+    html+='<div class="note-item-preview">'+n.preview+'</div>';
+    html+='<div class="note-item-tags">';
+    n.tags.forEach(function(t){html+='<span class="ov-session-tag">'+t+'</span>';});
+    html+='</div></div>';
+  });
+  document.getElementById('notesTabList').innerHTML=html;
+}
 
 // ═══ CLIENT OVERVIEW DATA & RENDERING ═══
 var clientOverviewData={
@@ -2394,6 +3149,15 @@ function renderOverview(clientIdx){
   document.getElementById('ovActivityList').innerHTML=actHtml;
 }
 
+// ═══ SIDEBAR TOGGLE ═══
+function toggleSidebar(){
+  var sb=document.getElementById('sidebar');
+  var btn=sb.querySelector('.sidebar-toggle');
+  var isCollapsed=sb.classList.toggle('collapsed');
+  btn.setAttribute('aria-expanded', String(!isCollapsed));
+  btn.setAttribute('aria-label', isCollapsed ? 'Expand sidebar' : 'Collapse sidebar');
+}
+
 // ═══ CLIENT HUB ═══
 var clientsData=[
   {name:'Jordan Meyers',initials:'JM',color:'#6B4C3B',company:'Apex Freight Systems',health:8.3,sessions:28,risk:'medium',lastTouch:'28 days',impact:76,impactTrend:'down',cadence:'watch'},
@@ -2411,46 +3175,56 @@ var clientsData=[
 ];
 function renderClientHub(){
   var tbody=document.getElementById('clientHubBody');if(!tbody)return;tbody.innerHTML='';
-  clientsData.forEach(function(c){
+  // Mock data for company-level rows matching Figma
+  var companies=[
+    {name:'Apex Technologies',contact:'Michael Rodriguez',initials:'AT',color:'#C62828',health:72,healthTrend:'—',coaches:'5 active',lastSession:'1 week ago',nextSession:'Mar 20, 2026',commits:8,overdue:2,status:'Active',statusColor:'#4CAF50'},
+    {name:'Fenix Industries',contact:'Robert Kim',initials:'FI',color:'#E65100',health:68,healthTrend:'—',coaches:'2 active',lastSession:'2 weeks ago',nextSession:'Not scheduled',commits:4,overdue:2,status:'On Hold',statusColor:'#FF9800'},
+    {name:'Horizon Ventures',contact:'Jennifer Park',initials:'HV',color:'#6A1B9A',health:45,healthTrend:'↗',coaches:'2 active',lastSession:'5 weeks ago',nextSession:'Not scheduled',commits:12,overdue:7,status:'At Risk',statusColor:'#C62828'},
+    {name:'Meridian Group',contact:'Sarah Chen',initials:'MG',color:'#2E7D32',health:85,healthTrend:'↗',coaches:'3 active',lastSession:'2 days ago',nextSession:'Tomorrow',commits:5,overdue:0,status:'Active',statusColor:'#4CAF50'},
+    {name:'Quantum Solutions',contact:'Lisa Anderson',initials:'QS',color:'#1565C0',health:78,healthTrend:'—',coaches:'3 active',lastSession:'4 days ago',nextSession:'Mar 22, 2026',commits:6,overdue:1,status:'Active',statusColor:'#4CAF50'},
+    {name:'Stellar Dynamics',contact:'David Thompson',initials:'SD',color:'#00695C',health:91,healthTrend:'↗',coaches:'4 active',lastSession:'Yesterday',nextSession:'Mar 18, 2026',commits:3,overdue:0,status:'Active',statusColor:'#4CAF50'}
+  ];
+  companies.forEach(function(co,i){
     var tr=document.createElement('tr');
     // Checkbox
-    var tdCk=document.createElement('td');tdCk.innerHTML='<input type="checkbox" aria-label="Select '+c.name+'">';tr.appendChild(tdCk);
-    // Client name + avatar
+    var tdCk=document.createElement('td');tdCk.innerHTML='<input type="checkbox" aria-label="Select '+co.name+'">';tr.appendChild(tdCk);
+    // Company name + avatar
     var tdN=document.createElement('td');
-    tdN.innerHTML='<div class="ch-client-cell"><div class="ch-avatar" style="background:'+c.color+'">'+c.initials+'</div><span class="ch-client-name">'+c.name+'</span></div>';
+    tdN.innerHTML='<div class="ch-client-cell"><div class="ch-avatar" style="background:'+co.color+'">'+co.initials+'</div><div><span class="ch-client-name" style="color:var(--color-brand);font-weight:600;">'+co.name+'</span><div style="font-size:11px;color:var(--color-text-muted);">'+co.contact+'</div></div></div>';
     tr.appendChild(tdN);
-    // Company
-    tr.appendChild(createEl('td','',c.company));
-    // Health Score
+    // Health
     var tdH=document.createElement('td');
-    var hColor=c.health>=8.5?'#4CAF50':c.health>=7?'#FF9800':'#E53935';
-    tdH.innerHTML='<div class="ch-health-score">'+c.health.toFixed(1)+' / 10 <div class="ch-health-bar"><div class="ch-health-fill" style="width:'+(c.health*10)+'%;background:'+hColor+'"></div></div></div>';
+    var hColor=co.health>=80?'#4CAF50':co.health>=60?'#FF9800':'#E53935';
+    tdH.innerHTML='<span style="font-weight:700;color:'+hColor+';">'+co.health+'</span> <span style="font-size:11px;color:var(--color-text-muted);">'+co.healthTrend+'</span>';
     tr.appendChild(tdH);
-    // Session Count
-    var tdSC=document.createElement('td');tdSC.innerHTML='<span class="ch-session-count">'+c.sessions+'</span><span class="ch-session-sub">Last 30 Days</span>';tr.appendChild(tdSC);
-    // Churn Risk
-    var tdR=document.createElement('td');tdR.innerHTML='<span class="ch-risk-badge ch-risk-'+c.risk+'">'+c.risk.toUpperCase()+'</span>';tr.appendChild(tdR);
-    // Last Touch
-    tr.appendChild(createEl('td','',c.lastTouch));
-    // Impact Score
-    var tdI=document.createElement('td');
-    var trendIcon=c.impactTrend==='up'?'&#8593;':c.impactTrend==='down'?'&#8595;':'&rarr;';
-    var trendColor=c.impactTrend==='up'?'#2E7D32':c.impactTrend==='down'?'#C62828':'#9B9590';
-    tdI.innerHTML='<div class="ch-impact">'+c.impact+'% <span class="ch-impact-trend" style="color:'+trendColor+'">'+trendIcon+'</span></div>';
-    tr.appendChild(tdI);
-    // Cadence
-    var tdCd=document.createElement('td');tdCd.innerHTML='<span class="ch-cadence-badge ch-cadence-'+c.cadence+'"><span class="ch-cadence-dot"></span>'+c.cadence.charAt(0).toUpperCase()+c.cadence.slice(1)+'</span>';tr.appendChild(tdCd);
-    // Action
-    var tdA=document.createElement('td');tdA.innerHTML='<button class="ch-action-btn" aria-label="Open '+c.name+'" title="View client"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></button>';tr.appendChild(tdA);
-    // Make row clickable
+    // Coaches
+    var tdC=document.createElement('td');
+    tdC.innerHTML='<span class="ov-session-tag" style="background:#E3F2FD;color:#1565C0;">'+co.coaches+'</span>';
+    tr.appendChild(tdC);
+    // Last Session
+    tr.appendChild(createEl('td','',co.lastSession));
+    // Next Session
+    tr.appendChild(createEl('td','',co.nextSession));
+    // Commitments
+    var tdCm=document.createElement('td');
+    tdCm.innerHTML=co.commits+(co.overdue>0?' <span style="color:#C62828;font-size:11px;font-weight:600;">('+co.overdue+' overdue)</span>':'');
+    tr.appendChild(tdCm);
+    // Status
+    var tdS=document.createElement('td');
+    tdS.innerHTML='<span class="ch-cadence-badge" style="background:'+co.statusColor+'20;color:'+co.statusColor+';border:1px solid '+co.statusColor+'40;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600;">'+co.status+'</span>';
+    tr.appendChild(tdS);
+    // Actions
+    var tdA=document.createElement('td');
+    tdA.innerHTML='<button class="ch-action-btn" aria-label="Open '+co.name+'">Open</button>';
+    tr.appendChild(tdA);
+    // Make row clickable — map company to first matching client
     tr.style.cursor='pointer';
-    tr.addEventListener('click', function(e){
+    var clientIdx=clientsData.findIndex(function(c){return c.company===co.name||c.name===co.contact;});
+    if(clientIdx===-1) clientIdx=i<clientsData.length?i:0;
+    tr.addEventListener('click',function(e){
       if(e.target.type==='checkbox') return;
-      showClientDetail(clientsData.indexOf(c));
+      showClientDetail(clientIdx);
     });
-    // Wire action button
-    var actionBtn=tdA.querySelector('.ch-action-btn');
-    if(actionBtn){actionBtn.addEventListener('click',function(e){e.stopPropagation();showClientDetail(clientsData.indexOf(c));});}
     tbody.appendChild(tr);
   });
 }
@@ -2463,8 +3237,8 @@ var clientDetailEls=['.client-bar','.tabs','[data-panel]'];
 function showClientHub(){
   document.getElementById('clientHubView').style.display='';
   clientDetailEls.forEach(function(sel){document.querySelectorAll(sel).forEach(function(el){el.style.display='none';});});
-  document.querySelectorAll('.topbar-nav-item').forEach(function(b){b.classList.remove('active');b.removeAttribute('aria-current');});
-  document.querySelectorAll('.topbar-nav-item').forEach(function(b){if(b.textContent.trim().indexOf('Client Hub')!==-1){b.classList.add('active');b.setAttribute('aria-current','page');}});
+  document.querySelectorAll('.sidebar-nav-item').forEach(function(b){b.classList.remove('active');b.removeAttribute('aria-current');});
+  document.querySelectorAll('.sidebar-nav-item').forEach(function(b){if(b.textContent.trim().indexOf('Client Hub')!==-1){b.classList.add('active');b.setAttribute('aria-current','page');}});
   renderClientHub();
 }
 var currentClientIdx=0;
@@ -2489,12 +3263,16 @@ function showClientDetail(idx){
   if(metaValues[2]) metaValues[2].textContent=(ov.commitments?ov.commitments.length:0)+' commitments';
   switchTab('overview');
   renderOverview(currentClientIdx);
+  renderRelationship(currentClientIdx);
+  renderCommitmentsTab(currentClientIdx);
+  renderGoalsTab(currentClientIdx);
+  renderNotesTab(currentClientIdx);
   // Update topbar active state
-  document.querySelectorAll('.topbar-nav-item').forEach(function(b){b.classList.remove('active');b.removeAttribute('aria-current');});
-  document.querySelectorAll('.topbar-nav-item').forEach(function(b){if(b.textContent.trim().indexOf('Client Hub')!==-1){b.classList.add('active');b.setAttribute('aria-current','page');}});
+  document.querySelectorAll('.sidebar-nav-item').forEach(function(b){b.classList.remove('active');b.removeAttribute('aria-current');});
+  document.querySelectorAll('.sidebar-nav-item').forEach(function(b){if(b.textContent.trim().indexOf('Client Hub')!==-1){b.classList.add('active');b.setAttribute('aria-current','page');}});
 }
 // Wire up topbar nav clicks
-document.querySelectorAll('.topbar-nav-item').forEach(function(btn){
+document.querySelectorAll('.sidebar-nav-item').forEach(function(btn){
   btn.addEventListener('click',function(){
     var label=btn.textContent.trim();
     if(label.indexOf('Coach Cockpit')!==-1){
@@ -2510,7 +3288,7 @@ document.querySelectorAll('.topbar-nav-item').forEach(function(btn){
         switchTab('ai-chat');
       }
       // Update active states
-      document.querySelectorAll('.topbar-nav-item').forEach(function(b){b.classList.remove('active');b.removeAttribute('aria-current');});
+      document.querySelectorAll('.sidebar-nav-item').forEach(function(b){b.classList.remove('active');b.removeAttribute('aria-current');});
       btn.classList.add('active');btn.setAttribute('aria-current','page');
     }
   });
