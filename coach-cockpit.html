@@ -142,96 +142,89 @@ body {
   flex: 1; display: flex; overflow: hidden;
 }
 
-/* ── Left Sidebar (collapsible) ── */
+/* ── Left Sidebar (matches ai-chat.html) ── */
 .sidebar {
-  width: 200px; min-width: 200px; background: var(--color-topbar);
-  display: flex; flex-direction: column; align-items: stretch;
-  padding: 12px 10px; gap: 2px; flex-shrink: 0;
-  border-right: 1px solid rgba(255,255,255,0.06);
-  overflow-y: auto;
-  transition: width var(--transition-smooth), min-width var(--transition-smooth), padding var(--transition-smooth);
+  display: flex; flex-direction: column; width: 220px; min-height: 100vh;
+  background: var(--color-topbar); padding: 16px 0; flex-shrink: 0;
+  z-index: 100; transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); overflow: hidden;
 }
-.sidebar.collapsed {
-  width: 56px; min-width: 56px; padding: 12px 6px;
-  align-items: center;
+.sidebar.collapsed { width: 60px; }
+.sidebar-logo-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 12px 16px 16px; flex-shrink: 0;
 }
-.sidebar.collapsed .sidebar-logo .logo-text,
-.sidebar.collapsed .sidebar-icon span,
-.sidebar.collapsed .sidebar-section-label,
-.sidebar.collapsed .sidebar-search,
-.sidebar.collapsed .sidebar-avatar .avatar-info,
-.sidebar.collapsed .sidebar-divider { display: none; }
-.sidebar.collapsed .sidebar-icon { justify-content: center; padding: 0; width: 36px; }
-.sidebar.collapsed .sidebar-logo { justify-content: center; padding: 0; }
-.sidebar.collapsed .sidebar-avatar { justify-content: center; padding: 4px; }
-.sidebar-collapse-btn {
-  width: 100%; height: 28px; border-radius: var(--radius-sm);
-  display: flex; align-items: center; justify-content: center; gap: 6px;
-  color: var(--color-topbar-text); cursor: pointer;
-  transition: all var(--transition); border: none; background: none;
-  font-family: var(--font); font-size: 11px; font-weight: 500;
-  margin-top: 4px; margin-bottom: 4px;
-}
-.sidebar-collapse-btn:hover { background: var(--color-topbar-hover); color: #ddd; }
-.sidebar-collapse-btn svg { width: 14px; height: 14px; flex-shrink: 0; transition: transform var(--transition); }
-.sidebar.collapsed .sidebar-collapse-btn svg { transform: rotate(180deg); }
-.sidebar.collapsed .sidebar-collapse-btn span { display: none; }
 .sidebar-logo {
-  width: 100%; display: flex; align-items: center; gap: 10px;
-  margin-bottom: 16px; flex-shrink: 0; padding: 4px 6px;
+  display: flex; align-items: center; gap: 10px; min-width: 0;
 }
-.sidebar-logo .logo-circle {
+.sidebar-logo .logo-icon {
   width: 32px; height: 32px; background: var(--color-brand);
-  border-radius: 8px; display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
+  border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
-.sidebar-logo .logo-circle svg { width: 16px; height: 16px; fill: #fff; }
-.sidebar-logo .logo-text { font-size: 16px; font-weight: 700; color: #fff; letter-spacing: 0.5px; }
-.sidebar-icon {
-  width: 100%; height: 36px; border-radius: var(--radius-sm);
-  display: flex; align-items: center; gap: 10px; padding: 0 10px;
-  color: var(--color-topbar-text); cursor: pointer;
-  transition: all var(--transition); border: none; background: none;
-  position: relative; font-family: var(--font); font-size: 13px; font-weight: 500;
-  text-align: left;
+.sidebar-logo .logo-icon svg { width: 18px; height: 18px; fill: #fff; }
+.sidebar-logo .logo-text {
+  font-size: 16px; font-weight: 700; color: #fff; letter-spacing: 0.5px;
+  white-space: nowrap; opacity: 1; transition: opacity 0.2s ease, width 0.3s ease;
 }
-.sidebar-icon:hover { background: var(--color-topbar-hover); color: #ddd; }
-.sidebar-icon.active { background: rgba(255,255,255,0.12); color: #fff; }
-.sidebar-icon svg { width: 18px; height: 18px; flex-shrink: 0; }
-.sidebar-icon span { white-space: nowrap; }
-.sidebar-divider {
-  width: 24px; height: 1px; background: rgba(255,255,255,0.08);
-  margin: 8px 0;
+.sidebar.collapsed .sidebar-logo .logo-text { opacity: 0; width: 0; overflow: hidden; }
+.sidebar.collapsed .sidebar-logo-row { justify-content: center; padding: 0 0 16px; }
+.sidebar-toggle {
+  display: flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; padding: 0;
+  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+  border-radius: var(--radius-sm); cursor: pointer; color: var(--color-topbar-text);
+  transition: all var(--transition); flex-shrink: 0;
 }
-.sidebar-section-label {
-  font-size: 9px; font-weight: 700; letter-spacing: 0.8px;
-  color: rgba(255,255,255,0.3); text-transform: uppercase;
-  margin-top: 10px; margin-bottom: 4px; padding-left: 10px;
+.sidebar-toggle:hover { color: #fff; background: rgba(255,255,255,0.15); }
+.sidebar-toggle svg { width: 16px; height: 16px; transition: transform 0.3s ease; }
+.sidebar.collapsed .sidebar-toggle svg { transform: rotate(180deg); }
+.sidebar-nav {
+  display: flex; flex-direction: column; gap: 2px; padding: 0 8px; flex: 1;
 }
-.sidebar-search {
-  width: 100%; padding: 8px 10px; border-radius: var(--radius-sm);
-  border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.06);
-  color: #fff; font-family: var(--font); font-size: 12px;
-  margin-bottom: 8px;
+.sidebar-nav-item {
+  display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+  border-radius: var(--radius-sm); color: var(--color-topbar-text);
+  text-decoration: none; font-size: 13.5px; font-weight: 500;
+  transition: all var(--transition); white-space: nowrap; cursor: pointer;
+  border: none; background: none; font-family: var(--font); overflow: hidden;
 }
-.sidebar-search::placeholder { color: rgba(255,255,255,0.35); }
-.sidebar-search:focus { outline: none; border-color: var(--color-brand); background: rgba(255,255,255,0.1); }
-.sidebar-spacer { flex: 1; }
-.sidebar-avatar {
-  width: 100%; display: flex; align-items: center; gap: 10px;
-  padding: 8px 10px; border-radius: var(--radius-sm);
-  cursor: pointer; margin-top: 8px; flex-shrink: 0;
-  transition: all var(--transition);
+.sidebar-nav-item:hover { background: var(--color-topbar-hover); color: #ddd; }
+.sidebar-nav-item.active { background: rgba(255,255,255,0.1); color: var(--color-topbar-active); }
+.sidebar-nav-item svg { width: 18px; height: 18px; opacity: 0.7; flex-shrink: 0; }
+.sidebar-nav-item.active svg { opacity: 1; }
+.sidebar-nav-item span { opacity: 1; transition: opacity 0.2s ease; overflow: hidden; }
+.sidebar.collapsed .sidebar-nav-item span { opacity: 0; width: 0; }
+.sidebar.collapsed .sidebar-nav-item { justify-content: center; padding: 10px 0; }
+.sidebar-bottom {
+  display: flex; flex-direction: column; gap: 4px; padding: 12px 8px 0;
+  border-top: 1px solid rgba(255,255,255,0.1); margin-top: 8px;
 }
-.sidebar-avatar:hover { background: var(--color-topbar-hover); }
-.sidebar-avatar .avatar-circle {
-  width: 32px; height: 32px; border-radius: 50%;
+.sidebar-bottom-btn {
+  display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+  border-radius: var(--radius-sm); border: none; background: none;
+  color: var(--color-topbar-text); font-size: 13px; font-weight: 500;
+  cursor: pointer; font-family: var(--font); transition: all var(--transition); overflow: hidden;
+}
+.sidebar-bottom-btn:hover { background: var(--color-topbar-hover); color: #ddd; }
+.sidebar-bottom-btn svg { width: 18px; height: 18px; opacity: 0.7; flex-shrink: 0; }
+.sidebar-bottom-btn span { opacity: 1; transition: opacity 0.2s ease; }
+.sidebar.collapsed .sidebar-bottom-btn span { opacity: 0; width: 0; }
+.sidebar.collapsed .sidebar-bottom-btn { justify-content: center; padding: 10px 0; }
+.sidebar-user {
+  display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+  border-radius: var(--radius-sm); cursor: pointer; transition: all var(--transition);
+}
+.sidebar-user:hover { background: var(--color-topbar-hover); }
+.sidebar-user .avatar {
+  width: 30px; height: 30px; border-radius: 50%;
   background: linear-gradient(135deg, #2E7D32, #4CAF50);
   display: flex; align-items: center; justify-content: center;
-  font-size: 10px; font-weight: 700; color: #fff; flex-shrink: 0;
+  font-size: 11px; font-weight: 600; color: #fff; flex-shrink: 0;
 }
-.sidebar-avatar .avatar-name { font-size: 12px; font-weight: 600; color: #fff; }
-.sidebar-avatar .avatar-role { font-size: 10px; color: var(--color-topbar-text); }
+.sidebar-user .user-info { overflow: hidden; }
+.sidebar-user .user-name { font-size: 12.5px; font-weight: 600; color: #fff; white-space: nowrap; }
+.sidebar-user .user-role { font-size: 10px; color: var(--color-topbar-text); }
+.sidebar.collapsed .sidebar-user .user-info { opacity: 0; width: 0; }
+.sidebar.collapsed .sidebar-user { justify-content: center; padding: 10px 0; }
 
 /* ════════════════════════════════════════════════
    MAIN CONTENT
@@ -783,17 +776,16 @@ body {
    ════════════════════════════════════════════════ */
 @media (max-width: 1200px) {
   .main-scroll { grid-template-columns: 60% 1fr; }
-  .sidebar { width: 56px; min-width: 56px; padding: 12px 6px; align-items: center; }
-  .sidebar .sidebar-logo .logo-text,
-  .sidebar .sidebar-icon span,
-  .sidebar .sidebar-section-label,
-  .sidebar .sidebar-search,
-  .sidebar .sidebar-avatar .avatar-info,
-  .sidebar .sidebar-divider { display: none; }
-  .sidebar .sidebar-icon { justify-content: center; padding: 0; width: 36px; }
-  .sidebar .sidebar-logo { justify-content: center; padding: 0; }
-  .sidebar .sidebar-avatar { justify-content: center; padding: 4px; }
-  .sidebar .sidebar-collapse-btn { display: none; }
+  .sidebar { width: 60px; }
+  .sidebar .sidebar-logo .logo-text { opacity: 0; width: 0; overflow: hidden; }
+  .sidebar .sidebar-logo-row { justify-content: center; padding: 0 0 16px; }
+  .sidebar .sidebar-nav-item span { opacity: 0; width: 0; }
+  .sidebar .sidebar-nav-item { justify-content: center; padding: 10px 0; }
+  .sidebar .sidebar-bottom-btn span { opacity: 0; width: 0; }
+  .sidebar .sidebar-bottom-btn { justify-content: center; padding: 10px 0; }
+  .sidebar .sidebar-user .user-info { opacity: 0; width: 0; }
+  .sidebar .sidebar-user { justify-content: center; padding: 10px 0; }
+  .sidebar .sidebar-toggle { display: none; }
   .kpi-row { grid-template-columns: repeat(3, 1fr); }
 }
 @media (max-width: 900px) {
@@ -877,61 +869,62 @@ body {
 <div class="app-body">
 
   <!-- Left Sidebar -->
-  <aside class="sidebar" role="navigation" aria-label="Sidebar navigation">
-    <div class="sidebar-logo">
-      <div class="logo-circle"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" fill="none" stroke="#fff" stroke-width="2"/></svg></div>
-      <span class="logo-text">CoachIQ</span>
+  <nav class="sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
+    <div class="sidebar-logo-row">
+      <div class="sidebar-logo">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+        </div>
+        <span class="logo-text">CoachIQ</span>
+      </div>
+      <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Collapse sidebar" aria-expanded="true" aria-controls="sidebar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
     </div>
-    <input class="sidebar-search" type="text" placeholder="Search clients, sessions..." aria-label="Search">
-    <button class="sidebar-collapse-btn" onclick="toggleSidebar()" aria-label="Toggle sidebar" title="Collapse sidebar">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="11 17 6 12 11 7"/><polyline points="18 17 13 12 18 7"/></svg>
-      <span>Collapse</span>
-    </button>
-    <a class="sidebar-icon active" href="coach-cockpit.html">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-      <span>Coach Cockpit</span>
-    </a>
-    <a class="sidebar-icon" href="ai-chat.html">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-      <span>Client Hub</span>
-    </a>
-    <button class="sidebar-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-      <span>Session Log</span>
-    </button>
-    <button class="sidebar-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
-      <span>My Coaching</span>
-    </button>
-    <div class="sidebar-divider"></div>
-    <span class="sidebar-section-label">Tools</span>
-    <button class="sidebar-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-      <span>AI Chat</span>
-    </button>
-    <button class="sidebar-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
-      <span>Resources</span>
-    </button>
-    <div class="sidebar-divider"></div>
-    <button class="sidebar-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <span>Search</span>
-    </button>
-    <button class="sidebar-icon" style="position:relative;">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
-      <span>Notifications</span>
-      <span style="position:absolute;top:6px;right:8px;width:8px;height:8px;border-radius:50%;background:var(--color-brand);"></span>
-    </button>
-    <div class="sidebar-spacer"></div>
-    <div class="sidebar-avatar" role="button" tabindex="0" aria-label="User profile">
-      <div class="avatar-circle">SM</div>
-      <div class="avatar-info">
-        <div class="avatar-name">Sarah Mitchell</div>
-        <div class="avatar-role">Coach</div>
+    <div class="sidebar-nav" role="menubar" aria-label="Platform navigation">
+      <a class="sidebar-nav-item active" href="coach-cockpit.html" role="menuitem" aria-current="page" aria-label="Coach Cockpit">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        <span>Coach Cockpit</span>
+      </a>
+      <a class="sidebar-nav-item" href="ai-chat.html" role="menuitem" aria-label="Client Hub">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span>Client Hub</span>
+      </a>
+      <button class="sidebar-nav-item" role="menuitem" aria-label="Session Log">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <span>Session Log</span>
+      </button>
+      <button class="sidebar-nav-item" role="menuitem" aria-label="My Coaching">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m18.7 8-5.1 5.2-2.8-2.7L7 14.3"/></svg>
+        <span>My Coaching</span>
+      </button>
+      <button class="sidebar-nav-item" role="menuitem" aria-label="AI Chat">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <span>AI Chat</span>
+      </button>
+      <button class="sidebar-nav-item" role="menuitem" aria-label="Resources">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        <span>Resources</span>
+      </button>
+    </div>
+    <div class="sidebar-bottom" role="group" aria-label="Utility actions">
+      <button class="sidebar-bottom-btn" title="Search" aria-label="Search">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <span>Search</span>
+      </button>
+      <button class="sidebar-bottom-btn" title="Notifications" aria-label="Notifications">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span>Notifications</span>
+      </button>
+      <div class="sidebar-user" role="group" aria-label="User profile" tabindex="0">
+        <div class="avatar" aria-hidden="true">SM</div>
+        <div class="user-info">
+          <div class="user-name">Sarah Mitchell</div>
+          <div class="user-role">Coach</div>
+        </div>
       </div>
     </div>
-  </aside>
+  </nav>
 
   <!-- Main Content -->
   <main class="main-content" id="main-content" role="main">
@@ -1680,16 +1673,12 @@ body {
    Sidebar Toggle
    ══════════════════════════════════════════════════ */
 function toggleSidebar(){
-  var sb=document.querySelector('.sidebar');
-  var btn=document.querySelector('.sidebar-collapse-btn');
+  var sb=document.getElementById('sidebar');
+  var btn=document.querySelector('.sidebar-toggle');
   sb.classList.toggle('collapsed');
-  if(sb.classList.contains('collapsed')){
-    btn.setAttribute('title','Expand sidebar');
-    btn.setAttribute('aria-label','Expand sidebar');
-  } else {
-    btn.setAttribute('title','Collapse sidebar');
-    btn.setAttribute('aria-label','Collapse sidebar');
-  }
+  var isCollapsed=sb.classList.contains('collapsed');
+  btn.setAttribute('aria-label',isCollapsed?'Expand sidebar':'Collapse sidebar');
+  btn.setAttribute('aria-expanded',isCollapsed?'false':'true');
 }
 
 /* ══════════════════════════════════════════════════
