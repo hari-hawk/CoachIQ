@@ -2248,23 +2248,31 @@ body {
 
   <!-- Client Table -->
   <div class="ch-table-header">
-    <div class="docs-search-wrapper" style="min-width:240px;">
-      <svg class="search-icn" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-      <input type="text" placeholder="Search companies or coaches..." oninput="searchClients(this.value)" aria-label="Search companies">
+    <div class="ch-table-count" id="chTotalCount">12 Total Clients</div>
+    <div class="ch-table-controls">
+      <div class="docs-search-wrapper" style="min-width:220px;">
+        <svg class="search-icn" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input type="text" placeholder="Search clients..." oninput="searchClients(this.value)" aria-label="Search clients">
+      </div>
+      <button class="ch-columns-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Columns
+      </button>
     </div>
   </div>
   <div class="ch-table-wrapper" role="region" aria-label="Clients table" tabindex="0">
     <table class="ch-table" role="grid">
       <thead><tr>
         <th style="width:32px;"><input type="checkbox" aria-label="Select all clients"></th>
-        <th>Company &#9650;</th>
-        <th>Health ↕</th>
-        <th>Coaches</th>
-        <th>Last Session</th>
-        <th>Next Session</th>
-        <th>Commitments</th>
-        <th>Status</th>
-        <th>Actions</th>
+        <th>Client Name</th>
+        <th>Company</th>
+        <th>Health Score</th>
+        <th>Session Count</th>
+        <th>Churn Risk</th>
+        <th>Last Touch</th>
+        <th>Impact Score</th>
+        <th>Cadence</th>
+        <th style="width:50px;">Action</th>
       </tr></thead>
       <tbody id="clientHubBody"></tbody>
     </table>
@@ -3175,62 +3183,67 @@ var clientsData=[
 ];
 function renderClientHub(){
   var tbody=document.getElementById('clientHubBody');if(!tbody)return;tbody.innerHTML='';
-  // Mock data for company-level rows matching Figma
-  var companies=[
-    {name:'Apex Technologies',contact:'Michael Rodriguez',initials:'AT',color:'#C62828',health:72,healthTrend:'—',coaches:'5 active',lastSession:'1 week ago',nextSession:'Mar 20, 2026',commits:8,overdue:2,status:'Active',statusColor:'#4CAF50'},
-    {name:'Fenix Industries',contact:'Robert Kim',initials:'FI',color:'#E65100',health:68,healthTrend:'—',coaches:'2 active',lastSession:'2 weeks ago',nextSession:'Not scheduled',commits:4,overdue:2,status:'On Hold',statusColor:'#FF9800'},
-    {name:'Horizon Ventures',contact:'Jennifer Park',initials:'HV',color:'#6A1B9A',health:45,healthTrend:'↗',coaches:'2 active',lastSession:'5 weeks ago',nextSession:'Not scheduled',commits:12,overdue:7,status:'At Risk',statusColor:'#C62828'},
-    {name:'Meridian Group',contact:'Sarah Chen',initials:'MG',color:'#2E7D32',health:85,healthTrend:'↗',coaches:'3 active',lastSession:'2 days ago',nextSession:'Tomorrow',commits:5,overdue:0,status:'Active',statusColor:'#4CAF50'},
-    {name:'Quantum Solutions',contact:'Lisa Anderson',initials:'QS',color:'#1565C0',health:78,healthTrend:'—',coaches:'3 active',lastSession:'4 days ago',nextSession:'Mar 22, 2026',commits:6,overdue:1,status:'Active',statusColor:'#4CAF50'},
-    {name:'Stellar Dynamics',contact:'David Thompson',initials:'SD',color:'#00695C',health:91,healthTrend:'↗',coaches:'4 active',lastSession:'Yesterday',nextSession:'Mar 18, 2026',commits:3,overdue:0,status:'Active',statusColor:'#4CAF50'}
-  ];
-  companies.forEach(function(co,i){
+  // Update total count
+  var countEl=document.getElementById('chTotalCount');
+  if(countEl) countEl.textContent=clientsData.length+' Total Clients';
+
+  clientsData.forEach(function(c,i){
     var tr=document.createElement('tr');
     // Checkbox
-    var tdCk=document.createElement('td');tdCk.innerHTML='<input type="checkbox" aria-label="Select '+co.name+'">';tr.appendChild(tdCk);
-    // Company name + avatar
+    var tdCk=document.createElement('td');tdCk.innerHTML='<input type="checkbox" aria-label="Select '+c.name+'">';tr.appendChild(tdCk);
+    // Client Name + avatar
     var tdN=document.createElement('td');
-    tdN.innerHTML='<div class="ch-client-cell"><div class="ch-avatar" style="background:'+co.color+'">'+co.initials+'</div><div><span class="ch-client-name" style="color:var(--color-brand);font-weight:600;">'+co.name+'</span><div style="font-size:11px;color:var(--color-text-muted);">'+co.contact+'</div></div></div>';
+    tdN.innerHTML='<div class="ch-client-cell"><div class="ch-avatar" style="background:'+c.color+'">'+c.initials+'</div><div><span class="ch-client-name">'+c.name+'</span></div></div>';
     tr.appendChild(tdN);
-    // Health
+    // Company
+    tr.appendChild(createEl('td','',c.company));
+    // Health Score with color bar
     var tdH=document.createElement('td');
-    var hColor=co.health>=80?'#4CAF50':co.health>=60?'#FF9800':'#E53935';
-    tdH.innerHTML='<span style="font-weight:700;color:'+hColor+';">'+co.health+'</span> <span style="font-size:11px;color:var(--color-text-muted);">'+co.healthTrend+'</span>';
+    var hColor=c.health>=8.5?'#4CAF50':c.health>=7?'#FF9800':'#E53935';
+    var hPct=Math.round(c.health*10);
+    tdH.innerHTML='<div class="ch-health-score"><span>'+c.health.toFixed(1)+' / 10</span><div class="ch-health-bar"><div class="ch-health-fill" style="width:'+hPct+'%;background:'+hColor+';"></div></div></div>';
     tr.appendChild(tdH);
-    // Coaches
-    var tdC=document.createElement('td');
-    tdC.innerHTML='<span class="ov-session-tag" style="background:#E3F2FD;color:#1565C0;">'+co.coaches+'</span>';
-    tr.appendChild(tdC);
-    // Last Session
-    tr.appendChild(createEl('td','',co.lastSession));
-    // Next Session
-    tr.appendChild(createEl('td','',co.nextSession));
-    // Commitments
-    var tdCm=document.createElement('td');
-    tdCm.innerHTML=co.commits+(co.overdue>0?' <span style="color:#C62828;font-size:11px;font-weight:600;">('+co.overdue+' overdue)</span>':'');
-    tr.appendChild(tdCm);
-    // Status
-    var tdS=document.createElement('td');
-    tdS.innerHTML='<span class="ch-cadence-badge" style="background:'+co.statusColor+'20;color:'+co.statusColor+';border:1px solid '+co.statusColor+'40;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600;">'+co.status+'</span>';
-    tr.appendChild(tdS);
-    // Actions
+    // Session Count
+    var tdSC=document.createElement('td');
+    tdSC.innerHTML='<span class="ch-session-count">'+c.sessions+'</span><span class="ch-session-sub">Last 30 Days</span>';
+    tr.appendChild(tdSC);
+    // Churn Risk
+    var tdR=document.createElement('td');
+    var rCls=c.risk==='high'?'ch-risk-high':c.risk==='medium'?'ch-risk-medium':'ch-risk-low';
+    tdR.innerHTML='<span class="ch-risk-badge '+rCls+'">'+c.risk.toUpperCase()+'</span>';
+    tr.appendChild(tdR);
+    // Last Touch
+    tr.appendChild(createEl('td','',c.lastTouch));
+    // Impact Score with trend
+    var tdI=document.createElement('td');
+    var tArrow=c.impactTrend==='up'?'↑':c.impactTrend==='down'?'↓':'→';
+    var tColor=c.impactTrend==='up'?'#2E7D32':c.impactTrend==='down'?'#C62828':'var(--color-text-muted)';
+    tdI.innerHTML='<div class="ch-impact"><span>'+c.impact+'%</span><span class="ch-impact-trend" style="color:'+tColor+';">'+tArrow+'</span></div>';
+    tr.appendChild(tdI);
+    // Cadence
+    var tdCd=document.createElement('td');
+    var cadLabel=c.cadence.charAt(0).toUpperCase()+c.cadence.slice(1);
+    var cadCls='ch-cadence-'+c.cadence;
+    tdCd.innerHTML='<span class="ch-cadence-badge '+cadCls+'"><span class="ch-cadence-dot"></span>'+cadLabel+'</span>';
+    tr.appendChild(tdCd);
+    // Action (open icon)
     var tdA=document.createElement('td');
-    tdA.innerHTML='<button class="ch-action-btn" aria-label="Open '+co.name+'">Open</button>';
+    tdA.innerHTML='<button class="ch-action-btn" aria-label="Open '+c.name+'" title="Open client"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></button>';
     tr.appendChild(tdA);
-    // Make row clickable — map company to first matching client
+    // Row click
     tr.style.cursor='pointer';
-    var clientIdx=clientsData.findIndex(function(c){return c.company===co.name||c.name===co.contact;});
-    if(clientIdx===-1) clientIdx=i<clientsData.length?i:0;
-    tr.addEventListener('click',function(e){
-      if(e.target.type==='checkbox') return;
-      showClientDetail(clientIdx);
-    });
+    (function(idx){
+      tr.addEventListener('click',function(e){
+        if(e.target.type==='checkbox'||e.target.closest('.ch-action-btn')) return;
+        showClientDetail(idx);
+      });
+    })(i);
     tbody.appendChild(tr);
   });
 }
 function searchClients(q){
   var rows=document.querySelectorAll('#clientHubBody tr');q=q.toLowerCase();
-  rows.forEach(function(r){var n=r.querySelector('.ch-client-name');if(n)r.style.display=n.textContent.toLowerCase().indexOf(q)!==-1?'':'none';});
+  rows.forEach(function(r){var txt=r.textContent.toLowerCase();r.style.display=txt.indexOf(q)!==-1?'':'none';});
 }
 // Toggle between Client Hub view and Client Detail view
 var clientDetailEls=['.client-bar','.tabs','[data-panel]'];
